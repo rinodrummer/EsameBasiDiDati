@@ -9,7 +9,7 @@
 | `<` | Minore |
 | `>=` | Maggiore o uguale |
 | `<=` | Minore o uguale |
-| &#124;&#124; | Concatenazione |
+| '\|\|` | Concatenazione |
 | `..` | Range di valori |
 | `--` | Commento su linea singola |
 | `/* */` | Commento multilinea |
