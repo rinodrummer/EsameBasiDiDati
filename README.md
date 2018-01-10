@@ -1,29 +1,29 @@
 # PL/SQL
 
-| Operatore | Funzione |
-| :---: | ------- |
-| `:=`  | Assegnazione |
-| `=`  | Uguaglianza |
-| `<>` | Disuguaglianza |
-| `>` | Maggiore |
-| `<` | Minore |
-| `>=` | Maggiore o uguale |
-| `<=` | Minore o uguale |
-| `\|\|` | Concatenazione |
-| `..` | Range di valori |
-| `--` | Commento su linea singola |
-| `/* */` | Commento multilinea |
+| Operatore | Funzione                  |
+| :-------: | ------------------------- |
+| `:=`      | Assegnazione              |
+| `=`       | Uguaglianza               |
+| `<>`      | Disuguaglianza            |
+| `>`       | Maggiore                  |
+| `<`       | Minore                    |
+| `>=`      | Maggiore o uguale         |
+| `<=`      | Minore o uguale           |
+| `\|\|`    | Concatenazione            |
+| `..`      | Range di valori           |
+| `--`      | Commento su linea singola |
+| `/* */`   | Commento multilinea       |
 
 
-| Tipo di dato |    Nome     |
-| ------------ |    :---:    |
-|   Numerico   |   `NUMBER`, `INTEGER`, `REAL`  |
-|   Carattere  |   `CHAR`    |
-|   Stringa    |  `VARCHAR2` |
-|   Booleano   |  `BOOLEAN`  |
-|     Data     |    `DATE`   |
-|     Ora      |    `TIME`   |
-|   Data/Ora   | `TIMESTAMP` |
+| Tipo di dato | Nome                         |
+| ------------ | :--------------------------: |
+|   Numerico   | `NUMBER`, `INTEGER`, `REAL`  |
+|   Carattere  | `CHAR`                       |
+|   Stringa    | `VARCHAR2`                   |
+|   Booleano   | `BOOLEAN`                    |
+|     Data     | `DATE`                       |
+|     Ora      | `TIME`                       |
+|   Data/Ora   | `TIMESTAMP`                  |
 
 ## Struttura di uno script
 ```
