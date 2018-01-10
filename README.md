@@ -1,5 +1,10 @@
 # PL/SQL
 
+Tutti i contenuti di questo repo fanno riferimento alla [documentazione ufficiale del linguaggio PL/SQL](https://docs.oracle.com/cloud/latest/db112/LNPLS/toc.htm).
+
+Molti contenuti sono ripresi esattamente come trattati dalla documentazione sopra citata.
+**Si sottolinea anche che la seguente può esser vista come una traduzione e un riassunto della stessa e che lo scop finale di questa repo è esclusivo a fini DIDATTICI!**
+
 | Operatore | Funzione                  |
 | :-------: | ------------------------- |
 | `:=`      | Assegnazione              |
@@ -93,6 +98,48 @@ END;
 ### Loop
 I loop rappresentano un elemento di fondamentale importanza in PL/SQL in quanto la maggior parte dei dati con cui ci si interfaccia sono "collezioni" di record.
 
+Vi sono diverse varianti di loop.
+La più semplice è la seguente:
+```
+[<<label>>] LOOP
+    ...
+END LOOP [<<label>>];
+```
+
+Esempio di loop con direttiva `EXIT`:
+```
+DECLARE
+    x NUMBER := 0;
+BEGIN
+    LOOP
+        x := x + 1;
+        DBMS_OUTPUT.PUT_LINE ('Inside loop:  x = ' || TO_CHAR(x));
+
+        IF x > 3 THEN
+            EXIT;
+        END IF;
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE(' After loop:  x = ' || TO_CHAR(x));
+END;
+```
+
+Esempio dello stesso loop con direttiva `EXIT WHEN`:
+```
+DECLARE
+    x NUMBER := 0;
+BEGIN
+    LOOP
+        x := x + 1;
+        DBMS_OUTPUT.PUT_LINE ('Inside loop:  x = ' || TO_CHAR(x));
+
+        EXIT WHEN x > 3;
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE(' After loop:  x = ' || TO_CHAR(x));
+END;
+```
+
 ## Definizione di elementi
 
 ### Definizione di un tipo personalizzato (subtipo)
@@ -148,7 +195,7 @@ y x%TYPE := 5;
 emp_salary employees.salary%TYPE;
 ```
 
-E' inoltre anche possibile dichiarare un elemento che fa riferimento alla **totale** struttura di una tabella, ovvero una variabile **_record_**:
+E' inoltre anche possibile dichiarare un elemento che fa riferimento alla **totale** struttura di una tabella, ovvero una **variabile _record_**:
 ```
 DECLARE
     emp employees%ROWTYPE;
