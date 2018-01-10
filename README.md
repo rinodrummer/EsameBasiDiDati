@@ -5,6 +5,37 @@ Tutti i contenuti di questo repo fanno riferimento alla [documentazione ufficial
 Molti contenuti sono ripresi esattamente come trattati dalla documentazione sopra citata.
 **Si sottolinea anche che la seguente può esser vista come una traduzione e un riassunto della stessa e che lo scop finale di questa repo è esclusivo a fini DIDATTICI!**
 
+Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Oracle: strumento utilissimo per la comprensione del linguaggio.
+
+## Leggenda:
+| Simbolo   | Significato               |
+| :-------: | ------------------------- |
+| `[ ... ]` | Elemento opzionale        |
+| `< ... >` | Elemento obbligatorio     |
+
+## Indice
+1. [Introduzione](#pl-sql):
+    * [Leggenda](#leggenda);
+    * [Indice](#indice);
+* [Struttura di uno script](#struttura-di-uno-script);
+* [Operatori](#operatori);
+* [Tipi di dato](#tipi-di-dato);
+* [Struttura di uno script](#struttura-di-uno-script);
+* [Strutture di controllo](#strutture-di-controllo);
+    1. Condizioni:
+        1. [`IF-ELSIF-ELSE`](#if-elsif-else);
+        * [`CASE`](#case):
+            * Simple `CASE`;
+            * Searched `CASE`;
+    * [Loop](#loop):
+        1. [Simple `LOOP`](#simple-loop):
+            * Utilizzo dell'`EXIT` e dell'`EXIT WHEN`;
+            * Utilizzo dell'`EXIT` con le label;
+        * [`FOR LOOP`](#for-loop);
+        * [WHILE LOOP](#);
+
+
+## Operatori
 | Operatore | Funzione                  |
 | :-------: | ------------------------- |
 | `:=`      | Assegnazione              |
@@ -15,11 +46,13 @@ Molti contenuti sono ripresi esattamente come trattati dalla documentazione sopr
 | `>=`      | Maggiore o uguale         |
 | `<=`      | Minore o uguale           |
 | `\|\|`    | Concatenazione            |
+| `<<`      | Inizio label              |
+| `>>`      | Fine label                |
 | `..`      | Range di valori           |
 | `--`      | Commento su linea singola |
 | `/* */`   | Commento multilinea       |
 
-
+## Tipi di dato
 | Tipo di dato | Nome                         |
 | ------------ | :--------------------------: |
 |   Numerico   | `NUMBER`, `INTEGER`, `REAL`  |
@@ -44,7 +77,9 @@ END;
 Le strutture di controllo presenti in PL/SQL sono principalmente condizioni e loop.
 
 ### Condizioni
-Le condizioni vengono espresse con la seguente sintassi:
+Le condizioni vengono espresse con le seguenti sintassi:
+
+### IF-ELIF-ELSE
 ```
 IF (cond1) THEN
     ...
@@ -55,7 +90,8 @@ ELSE
 END IF;
 ```
 
-E' anche possibile utilizzare la clausola `CASE` con la seguente sintassi, denominata simple CASE:
+#### CASE
+E' anche possibile utilizzare la clausola `CASE` con la seguente sintassi, denominata **simple CASE**:
 ```
 CASE grade
   WHEN 'A' THEN 'Excellent'
@@ -75,7 +111,7 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('No such grade');
 ```
 
-La forma alternativa è chiamata searched CASE e può essere usata anche in assegnazione ad una variabile, come nell'esempio:
+La forma alternativa è chiamata **searched CASE** e può essere usata anche in assegnazione ad una variabile, come nell'esempio:
 ```
 DECLARE
   grade CHAR(1); -- NULL by default
@@ -91,7 +127,7 @@ BEGIN
         ELSE 'No such grade'
     END;
 
-    -- Operazioni
+    DBMS_OUTPUT.PUT_LINE(appraisal);
 END;
 ```
 
@@ -99,7 +135,8 @@ END;
 I loop rappresentano un elemento di fondamentale importanza in PL/SQL in quanto la maggior parte dei dati con cui ci si interfaccia sono "collezioni" di record.
 
 Vi sono diverse varianti di loop.
-La più semplice è la seguente:
+
+#### Simple LOOP
 ```
 [<<label>>] LOOP
     ...
@@ -140,9 +177,47 @@ BEGIN
 END;
 ```
 
+Come visto dal codice presentante la sintassi, è possibile definire una label per il loop.
+Ciò può essere molto utile quando si presenta la neccessità di terminare loop più esterni rispetto al corrente o per casi di chiusura veloce.
+
+Es.:
+```
+DECLARE
+    x NUMBER := 0;
+    y NUMBER := 0;
+
+BEGIN
+    <<loop_esterno>> LOOP
+        x := x + 2;
+        y := 0;
+        <<loop_interno>> LOOP
+            y := y + 4;
+
+            -- debug output:
+            DBMS_OUTPUT.PUT_LINE('x: ' || TO_CHAR(x) || '; y: ' || TO_CHAR(y) || '; sum: ' || TO_CHAR(x + y) || '; prod: ' || TO_CHAR(x * (x * y)));
+
+            EXIT loop_interno WHEN (x + y) >= 15;
+            EXIT loop_esterno WHEN (x * (x * y)) >= 350;
+        END LOOP loop_interno;
+    END LOOP loop_esterno;
+END;
+```
+**ATTENZIONE!** E' importante controllare la corretta chiusura dei loop e/o la posizione della direttiva `EXIT WHEN` in quanto potrebbe causare loop fuori controllo.
+
+<!-- TODO Descrivere CONTINUE -->
+
+#### FOR LOOP
+Il `FOR LOOP` è un loop principalmente basato sui range e sull'utilizzo di un contatore.
+Esso presenta la seguente sintassi:
+```
+[<<label>>] FOR index IN [ REVERSE ] lower_bound..upper_bound LOOP
+  statements
+END LOOP [ label ];
+```
+
 ## Definizione di elementi
 
-### Definizione di un tipo personalizzato (subtipo)
+### Definizione di un subtipo
 Un subtipo è un tipo di dato personalizzato basato su un tipo primitivo.
 ```
 SUBTYPE Word IS CHAR(6);
@@ -172,11 +247,9 @@ max NUMBER;
 pi CONSTANT REAL := 3.14159;
 ```
 
-Come è possibile notare, una variabile può non ricevere assegnazione alla creazione.
-Essa avrà valore `NULL`.
+Come è possibile notare, una variabile può non ricevere assegnazione alla creazione. Essa avrà valore `NULL`.
 
-Bisogna fare assoluta attenzione a questo caso: una variabile di questo tipo,
-specialmente nel contesto numerico non può essere usata come valore incrementale.
+Bisogna fare assoluta attenzione a questo caso: una variabile di questo tipo, specialmente nel contesto numerico non può essere usata come valore incrementale.
 
 Es.:
 ```
@@ -272,3 +345,6 @@ Può essere visto all'opera [qui](https://livesql.oracle.com/apex/livesql/s/f30w
 
 Mentre la sintassi per dichiarare una funzione è la seguente:
 <!-- TODO Continuare la sezione dedicata alle funzioni. -->
+
+# Rigraziamenti
+- Si ringrazia eternamente **Alessandro Rubino** per gli splendidi appunti.
