@@ -32,8 +32,15 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
             * Utilizzo dell'`EXIT` e dell'`EXIT WHEN`;
             * Utilizzo dell'`EXIT` con le label;
         * [`FOR LOOP`](#for-loop);
-        * [WHILE LOOP](#);
-
+        * [`WHILE LOOP`](#while-loop) _(Mancante)_;
+        * [`LOOP` con cursore](#cursor-loop) _(Mancante)_;
+    * [Definizione di elementi](#definizione-di-elementi):
+        * [Definizione di tipi personalizzati (subtipi)](#definizione-di-un-subtipo);
+        * [Definizione di variabili e costanti](#definizione-di-variabili-e-costanti):
+            * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
+            * [Cursore](#cursore) _(Mancante)_;
+        * [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
+* [Ringraziamenti](#ringraziamenti);
 
 ## Operatori
 | Operatore | Funzione                  |
@@ -79,7 +86,7 @@ Le strutture di controllo presenti in PL/SQL sono principalmente condizioni e lo
 ### Condizioni
 Le condizioni vengono espresse con le seguenti sintassi:
 
-### IF-ELIF-ELSE
+### IF-ELSIF-ELSE
 ```
 IF (cond1) THEN
     ...
@@ -215,6 +222,7 @@ Esso presenta la seguente sintassi:
 END LOOP [ label ];
 ```
 
+
 ## Definizione di elementi
 
 ### Definizione di un subtipo
@@ -260,6 +268,7 @@ BEGIN
 END;
 ```
 
+#### %TYPE e %ROWTYPE
 E' anche possibile associare il tipo di una colonna (o di un'altra variabile) alla corrente in dichiarazione, es.:
 ```
 x NUMBER(5) := 10;
@@ -289,8 +298,10 @@ INSERT INTO employees(id, name, surname, salary)
 VALUES (emp.id, emp.name, emp.surname, emp.salary);
 ```
 
+#### Cursore
 Esiste inoltre uno speciale tipo di variabile chiamato **cursore**. Questo
 <!-- FIXME Continuare la sezione dedicata ai cursori. -->
+
 
 ### Definizione di procedure e funzioni
 E' scontato ricordare che le procedure non ritornano valore, le funzioni sì.
