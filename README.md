@@ -41,6 +41,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
 1. [Ringraziamenti](#ringraziamenti);
 
+
 ## Operatori
 | Operatore | Funzione                  |
 | :-------: | ------------------------- |
@@ -486,40 +487,44 @@ END;
 
 ### Definizione di procedure e funzioni
 E' scontato ricordare che le procedure non ritornano valore, le funzioni sì.
+**ATTENZIONE!** E' importante dire che le procedure e le funzioni devono essere dichiarate con una query dedicata! Non possono essere definite altre dichiarazioni oltre alle stesse!
 
 Per quanto riguarda le procedure, la sintassi è la seguente:
 ```
-PROCEDURE <nomeProcedura> (
+CREATE [OR REPLACE] PROCEDURE <nomeProcedura> (
     [<nomeParametro> [IN OUT] <tipo>] [,
     [<nomeParametro> [IN OUT] <tipo>]]
-) IS
-    [<nomeVarLocale> <tipo>] [,
-    [<nomeVarLocale> <tipo>]]
+) IS   --- Può anche essere usato AS
+    [<nomeVarLocale> <tipo>;]
+    [<nomeVarLocale> <tipo>;]
 BEGIN
     ...   -- corpo della funzione
-END;
+    [RETURN;]
+END [nomeProcedura];
 ```
 
 Es.:
 ```
+CREATE PROCEDURE adjust_salary (
+    emp_id NUMBER,
+    adj NUMBER,
+    sal IN OUT NUMBER
+) IS
+BEGIN
+    sal := sal + adj;
+
+    UPDATE employees
+    SET salary = sal
+    WHERE id = emp_id;
+
+    DBMS_OUTPUT.PUT_LINE('Updated salary is: ' || sal);
+END;
+```
+
+```
 DECLARE
     emp NUMBER := 1;
     emp_salary NUMBER(5);
-
-    PROCEDURE adjust_salary (
-        emp_id NUMBER,
-        adj NUMBER,
-        sal IN OUT NUMBER
-    ) IS
-    BEGIN
-        sal := sal + adj;
-
-        UPDATE employees
-        SET salary = sal
-        WHERE id = emp_id;
-
-        DBMS_OUTPUT.PUT_LINE('Updated salary is: ' || sal);
-    END;
 BEGIN
     SELECT salary
     INTO emp_salary
@@ -533,10 +538,23 @@ END;
 La seguente procedura aggiunge un dato valore al salario di un dipendente.
 Può essere visto all'opera [qui](https://livesql.oracle.com/apex/livesql/s/f30wems22by88g8eqhi6oeus5).
 
----
+Una procedura può utilizzare la parola chiave `RETURN` per terminare la sua esecuzione, ma non può essere accompagnata da nessun valore.
 
 Mentre la sintassi per dichiarare una funzione è la seguente:
-<!-- TODO Continuare la sezione dedicata alle funzioni. -->
+```
+CREATE [OR REPLACE] FUNCTION <nomeFunzione> (
+    [<nomeParametro> [IN OUT] <tipo>] [,
+    [<nomeParametro> [IN OUT] <tipo>]]
+)
+RETURN <tipo>
+AS   --- Può anche essere usato IS
+    [<nomeVarLocale> <tipo>;]
+    [<nomeVarLocale> <tipo>;]
+BEGIN
+    -- Operazioni
+    RETURN <varLocale>;
+END [nomeFunzione];
+```
 
 # Rigraziamenti
 - Si ringrazia eternamente **Alessandro Rubino** per gli splendidi appunti.
