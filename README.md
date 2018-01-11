@@ -17,12 +17,11 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 1. [Introduzione](#pl-sql):
     * [Legenda](#legenda);
     * [Indice](#indice);
-1. [Struttura di uno script](#struttura-di-uno-script);
 1. [Operatori](#operatori);
 1. [Tipi di dato](#tipi-di-dato);
 1. [Struttura di uno script](#struttura-di-uno-script);
 1. [Strutture di controllo](#strutture-di-controllo);
-    1. Condizioni:
+    1. [Condizioni](#condizioni):
         1. [`IF-ELSIF-ELSE`](#if-elsif-else);
         1. [`CASE`](#case):
             * Simple `CASE`;
