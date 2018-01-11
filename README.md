@@ -17,30 +17,30 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 1. [Introduzione](#pl-sql):
     * [Leggenda](#leggenda);
     * [Indice](#indice);
-* [Struttura di uno script](#struttura-di-uno-script);
-* [Operatori](#operatori);
-* [Tipi di dato](#tipi-di-dato);
-* [Struttura di uno script](#struttura-di-uno-script);
-* [Strutture di controllo](#strutture-di-controllo);
+1. [Struttura di uno script](#struttura-di-uno-script);
+1. [Operatori](#operatori);
+1. [Tipi di dato](#tipi-di-dato);
+1. [Struttura di uno script](#struttura-di-uno-script);
+1. [Strutture di controllo](#strutture-di-controllo);
     1. Condizioni:
         1. [`IF-ELSIF-ELSE`](#if-elsif-else);
-        * [`CASE`](#case):
+        1. [`CASE`](#case):
             * Simple `CASE`;
             * Searched `CASE`;
-    * [Loop](#loop):
+    1. [Loop](#loop):
         1. [Simple `LOOP`](#simple-loop):
             * Utilizzo dell'`EXIT` e dell'`EXIT WHEN`;
             * Utilizzo dell'`EXIT` con le label;
-        * [`FOR LOOP`](#for-loop);
-        * [`WHILE LOOP`](#while-loop) _(Mancante)_;
-        * [`LOOP` con cursore](#cursor-loop) _(Mancante)_;
-    * [Definizione di elementi](#definizione-di-elementi):
-        * [Definizione di tipi personalizzati (subtipi)](#definizione-di-un-subtipo);
-        * [Definizione di variabili e costanti](#definizione-di-variabili-e-costanti):
-            * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
-            * [Cursore](#cursore) _(Mancante)_;
-        * [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
-* [Ringraziamenti](#ringraziamenti);
+        1. [`FOR LOOP`](#for-loop);
+        1. [`WHILE LOOP`](#while-loop) _(Mancante)_;
+        1. [`LOOP` con cursore](#cursor-loop) _(Mancante)_;
+1. [Definizione di elementi](#definizione-di-elementi):
+    1. [Definizione di tipi personalizzati (subtipi)](#definizione-di-un-subtipo);
+    1. [Definizione di variabili e costanti](#definizione-di-variabili-e-costanti):
+        * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
+        * [Cursore](#cursore) _(Mancante)_;
+    1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
+1. [Ringraziamenti](#ringraziamenti);
 
 ## Operatori
 | Operatore | Funzione                  |
