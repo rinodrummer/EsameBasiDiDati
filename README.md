@@ -32,13 +32,13 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
             * Utilizzo dell'`EXIT` e dell'`EXIT WHEN`;
             * Utilizzo dell'`EXIT` con le label;
         1. [`FOR LOOP`](#for-loop);
-        1. [`WHILE LOOP`](#while-loop) _(Mancante)_;
-        1. [`LOOP` con cursore](#cursor-loop) _(Mancante)_;
+        1. [`WHILE LOOP`](#while-loop);
+        1. [`LOOP` con cursori](#loop-con-cursori);
 1. [Definizione di elementi](#definizione-di-elementi):
     1. [Definizione di tipi personalizzati (subtipi)](#definizione-di-un-subtipo);
     1. [Definizione di variabili e costanti](#definizione-di-variabili-e-costanti):
         * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
-        * [Cursore](#cursore) _(Mancante)_;
+        * [Cursore](#cursore);
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
 1. [Ringraziamenti](#ringraziamenti);
 
@@ -147,7 +147,7 @@ Vi sono diverse varianti di loop.
 ```
 [<<label>>] LOOP
     ...
-END LOOP [<<label>>];
+END LOOP [label];
 ```
 
 Esempio di loop con direttiva `EXIT`:
@@ -214,14 +214,115 @@ END;
 <!-- TODO Descrivere CONTINUE -->
 
 #### FOR LOOP
-Il `FOR LOOP` è un loop principalmente basato sui range e sull'utilizzo di un contatore.
+Il `FOR LOOP` è un loop principalmente basato sull'utilizzo di un contatore e sui range.
 Esso presenta la seguente sintassi:
 ```
-[<<label>>] FOR index IN [ REVERSE ] lower_bound..upper_bound LOOP
-  statements
-END LOOP [ label ];
+[<<label>>] FOR <indice> IN [REVERSE] <min..max> LOOP
+  ...
+END LOOP [label];
 ```
 
+La clausola `REVERSE` consente di iterare il range in maniera inversa.
+Es.:
+```
+BEGIN
+    FOR i IN REVERSE 1..3 LOOP
+        DBMS_OUTPUT.PUT_LINE(i);
+    END LOOP;
+
+    FOR i IN 3..1 LOOP
+        DBMS_OUTPUT.PUT_LINE(i);
+    END LOOP;
+END;
+```
+I due loop produrranno lo stesso risultato.
+
+L'`indice` ha uno scope definito solo all'interno del loop.
+
+E' importante notare che se vi è una variabile con lo stesso nome, ma con scope **superiore**, questa non viene sovrascritta.
+Es.:
+```
+DECLARE
+  i NUMBER := 5;
+  first NUMBER := 1;
+  last NUMBER := 3;
+BEGIN
+    FOR i IN first..last LOOP
+        DBMS_OUTPUT.PUT_LINE('Inside loop, i is ' || TO_CHAR(i)); -- 1, 2, 3
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE('Outside loop, i is ' || TO_CHAR(i)); -- 5
+END;
+```
+E' possibile accedere a variabili omonime di altri scope grazie alle label con una sintassi C-like (struct).
+Per variabili di scope superiore estremo (appartenenti al `DECLARE`) è possibile usare la label `main`.
+Es.: `main.i`.
+
+
+#### WHILE LOOP
+Il `WHILE LOOP` è indicato per l'utilizzo di condizioni a guardia del loop.
+La sintassi è la seguente:
+
+```
+[<<label>>] WHILE <condizione> LOOP
+  ...
+END LOOP [label];
+```
+
+#### LOOP con cursori
+Un cursore è un particolare tipo di variabile che permette di iterare dei record di una tabella _([vedi qui](#cursore))_.
+Es.:
+**FOR LOOP con cursore**:
+```
+DECLARE
+    v_employees employees%ROWTYPE;
+    CURSOR c1 IS
+        SELECT *
+        FROM employees;
+BEGIN
+    OPEN c1;
+
+    -- Fetch entire row into v_employees record:
+    FOR i IN 1..10 LOOP
+        FETCH c1 INTO v_employees;
+        EXIT WHEN c1%NOTFOUND;
+        -- Process data here
+    END LOOP;
+
+    CLOSE c1;
+END;
+```
+Il codice precedente verrà eseguito un massimo di 10 volte oppure fino a quando il fetching del cursore non ritornerà NULL.
+
+E' inoltre possibile iterare un cursore con l'utilizzo di una [**variabile record**](#type-e-rowtype):
+```
+DECLARE
+    CURSOR c1 IS
+        SELECT id, name
+        FROM employees
+        WHERE surname = 'Landolfi';
+BEGIN
+    FOR emp IN c1 LOOP
+        DBMS_OUTPUT.PUT_LINE('ID: ' || emp.id || ', Nome: ' || emp.name);
+  END LOOP;
+END;
+```
+
+Oppure è altrettanto possibile iterare il risultato di una clausola `SELECT`:
+```
+BEGIN
+    FOR emp IN (
+        SELECT name || ' ' || surname AS full_name, salary * 10 AS dream_salary
+        FROM employees
+        WHERE ROWNUM <= 5
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(emp.full_name || ' dreams of making ' || emp.dream_salary);
+  END LOOP;
+END;
+```
+Ovviamente la cosa può comportare limitazioni rispetto l'utilizzo di cursori.
+
+Altri contenuti riguardanti le iterazioni di cursori possono essere trovati proseguendo.
 
 ## Definizione di elementi
 
@@ -299,8 +400,67 @@ VALUES (emp.id, emp.name, emp.surname, emp.salary);
 ```
 
 #### Cursore
-Esiste inoltre uno speciale tipo di variabile chiamato **cursore**. Questo
-<!-- FIXME Continuare la sezione dedicata ai cursori. -->
+Esiste uno speciale tipo di variabile chiamato **cursore**. Questo permette di iterare più righe di una tabella.
+
+Questo tipo di variabile è molto utilizzato.
+
+Principalmente vi sono due tipi di dichiarazione di cursori:
+```
+CURSOR <nome> IS <SELECT ...>;
+```
+
+Questa dichiarazione viene utilizzata principalmente in contesti statici e si può interagire con cursori dichiarati in questo modo diretto tramite un'iterazione dello stesso. Es.:
+```
+DECLARE
+    CURSOR c1 IS
+        SELECT id, name
+        FROM employees
+        WHERE surname = 'Landolfi';
+BEGIN
+    FOR emp IN c1 LOOP
+        DBMS_OUTPUT.PUT_LINE('ID: ' || emp.id || ', Nome: ' || emp.name);
+  END LOOP;
+END;
+```
+
+Oppure con le clausole `OPEN-FETCH-CLOSE`:
+```
+DECLARE
+    emp employees%ROWTYPE;
+
+    CURSOR c1 IS
+        SELECT *
+        FROM employees;
+BEGIN
+    OPEN c1;
+        FETCH c1 INTO emp;
+
+        DBMS_OUTPUT.PUT_LINE(TO_CHAR(emp.name));
+    CLOSE c1;
+END;
+```
+E' importante notare che in questa forma, è necessario iterare il fetching per ottenere più risultati.
+
+N.B.: Per un corretto funzionamento di un fetching iterato in maniera indefinita, l'approccio migliore è il seguente:
+```
+DECLARE
+    emp employees%ROWTYPE;
+
+    CURSOR c1 IS
+        SELECT *
+        FROM employees;
+BEGIN
+    OPEN c1;
+        LOOP
+            FETCH c1 INTO emp;
+            EXIT WHEN c1%NOTFOUND;
+
+            DBMS_OUTPUT.PUT_LINE(TO_CHAR(emp.name));
+
+        END LOOP;
+    CLOSE c1;
+END;
+```
 
 
 ### Definizione di procedure e funzioni
