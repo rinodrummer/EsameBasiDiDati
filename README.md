@@ -342,7 +342,6 @@ SUBTYPE <nomeSubtipo> IS [<tipoBase>(dim) | RANGE <basso>..<alto>] [NOT NULL];
 Nella sezione di dichiarazione è possibile dichiare variabili, costanti,
 procedure e funzioni.
 Le variabili e le costanti vengono dichiarate con la seguente sintassi:
-
 ```
 <nome> [CONSTANT] <tipo>(dim) [:= <valore>];
 ```
@@ -409,7 +408,7 @@ Principalmente vi sono due tipi di dichiarazione di cursori:
 CURSOR <nome> IS <SELECT ...>;
 ```
 
-Questa dichiarazione viene utilizzata principalmente in contesti statici e si può interagire con cursori dichiarati in questo modo diretto tramite un'iterazione dello stesso. Es.:
+Questa dichiarazione viene utilizzata principalmente in contesti _statici_ e si può interagire con cursori dichiarati in questo modo diretto tramite un'iterazione dello stesso. Es.:
 ```
 DECLARE
     CURSOR c1 IS
@@ -458,6 +457,29 @@ BEGIN
             DBMS_OUTPUT.PUT_LINE(TO_CHAR(emp.name));
 
         END LOOP;
+    CLOSE c1;
+END;
+```
+
+Mentre per contesti _dinamici_ è possibile utilizzare i `REF CURSOR`, ovvero cursori in cui verranno selezionati elementi in posizioni diverse dalla dichiarazione di questo:
+```
+DECLARE
+    emp employees%ROWTYPE;
+
+    c1 SYS_REFCURSOR;   -- Il Prof. Peron utilizza la sintassi 'c1 REF CURSOR;'
+BEGIN
+    OPEN c1 FOR   -- E' importante notare che questo FOR ha la stessa funzione di un IS!
+        SELECT *
+        FROM employees;
+
+    -- Questa clausola LOOP non ha connessione col FOR dello statement precedente!
+    LOOP
+        FETCH c1 INTO emp;
+        EXIT WHEN c1%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(TO_CHAR(emp.name));
+    END LOOP;
+
     CLOSE c1;
 END;
 ```
