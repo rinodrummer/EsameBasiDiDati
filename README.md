@@ -7,7 +7,7 @@ Molti contenuti sono ripresi esattamente come trattati dalla documentazione sopr
 
 Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Oracle: strumento utilissimo per la comprensione del linguaggio.
 
-## Leggenda:
+## Legenda:
 | Simbolo   | Significato               |
 | :-------: | ------------------------- |
 | `[ ... ]` | Elemento opzionale        |
@@ -15,7 +15,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 
 ## Indice
 1. [Introduzione](#pl-sql):
-    * [Leggenda](#leggenda);
+    * [Legenda](#legenda);
     * [Indice](#indice);
 1. [Struttura di uno script](#struttura-di-uno-script);
 1. [Operatori](#operatori);
