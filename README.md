@@ -562,7 +562,19 @@ La parte precedentemente vista è definita come **statica** in quanto interagisc
 La potenzialità di PL/SQL sta nel fatto che possiamo costruire informazioni da far successivamente eseguire.
 
 La sinstassi per l'esecuzione di query dinamicamente è la seguente:
+```
+EXECUTE IMMEDIATE <query | variabile | blocco anonimo> [[RETURNING | BULK COLLECT] INTO <varContenitore>] [USING [IN | OUT | IN OUT] <varPlaceholder> [, [IN | OUT | IN OUT] <varPlaceholder> ...]];
+```
 
+Il comando, in quanto molto complesso verrà esplicato da quanto segue:
+
+1. `EXECUTE IMMEDIATE`: dichiara l'inizio di un'esecuzione dinamica;
+1. `<query | variabile | blocco anonimo>`:
+    1. `query`: query SQL che può contenere placeholder. **Non deve** terminare con il simbolo `;`;
+    1. `variabile`: variabile di tipo `VARCHAR2` o `CHAR` di qualsivoglia natura (dichiarazione diretta o ricevuta da query). Può contenere un blocco anonimo.
+    1. `blocco anonimo`: blocco di codice in PL/SQL. Deve essere inscritto in una clausola `BEGIN ... END;` (deve terminare con punto e virgola), es.: `BEGIN DMBS_OUTPUT.PUT_LINE('Hello world!') END;`.
+1. `[[RETURNING | BULK COLLECT] INTO <varContenitore>]`: le clausole indicate hanno scopi diversi, ma quasi mai coesistenti:
+    1. `RETURNING INTO <varContenitore>`: utilizzabile per una qualsiasi query DML escluso il `SELECT` (quindi `UPDATE`, `DELETE`, `INSERT`). Conterrà i risultati della query
 
 Per esempio, supponiamo che diamo la possibilità di definire una tabella ad un utente (caso da considerarsi **solo** a livello **didattico**!), quindi supponiamo di avere la seguente tabella:
 
