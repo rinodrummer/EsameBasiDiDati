@@ -60,15 +60,15 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 | `/* */`   | Commento multilinea       |
 
 ## Tipi di dato
-| Tipo di dato | Nome                         |
-| ------------ | :--------------------------: |
-|   Numerico   | `NUMBER`, `INTEGER`, `REAL`  |
-|   Carattere  | `CHAR`                       |
-|   Stringa    | `VARCHAR2`                   |
-|   Booleano   | `BOOLEAN`                    |
-|     Data     | `DATE`                       |
-|     Ora      | `TIME`                       |
-|   Data/Ora   | `TIMESTAMP`                  |
+| Tipo di dato                       | Nome                         |
+| ---------------------------------- | :--------------------------: |
+| Numerico                           | `NUMBER`, `INTEGER`, `REAL`  |
+| Carattere                          | `CHAR`                       |
+| Stringa                            | `VARCHAR2`                   |
+| Booleano (solo var., cost. e fun.) | `BOOLEAN`                    |
+| Data                               | `DATE`                       |
+| Ora                                | `TIME`                       |
+| Data/Ora                           | `TIMESTAMP`                  |
 
 ## Struttura di uno script
 ```
@@ -554,6 +554,37 @@ BEGIN
     -- Operazioni
     RETURN <varLocale>;
 END [nomeFunzione];
+```
+
+
+## SQL Dinamico
+La parte precedentemente vista è definita come **statica** in quanto interagisce solo con elementi già definiti.
+La potenzialità di PL/SQL sta nel fatto che possiamo costruire informazioni da far successivamente eseguire.
+
+La sinstassi per l'esecuzione di query dinamicamente è la seguente:
+
+
+Per esempio, supponiamo che diamo la possibilità di definire una tabella ad un utente (caso da considerarsi **solo** a livello **didattico**!), quindi supponiamo di avere la seguente tabella:
+
+```
+CREATE SEQUENCE user_id_autoinc;
+CREATE TABLE users (
+    id NUMBER(5) DEFAULT user_id_autoinc.NEXTVAL CONSTRAINT users_id_pk PRIMARY KEY,
+    username VARCHAR2(32) NOT NULL CONSTRAINT users_username_uq UNIQUE,
+    is_admin NUMBER(1) DEFAULT 0 CONSTRAINT users_admin_chk CHECK (is_admin IN (0, 1)), -- BOOLEAN
+    custom_table VARCHAR2(1000) NULL
+);
+```
+Al momento ignoriamo la possibilità di popolare `custom_table` solo se `is_admin` è `TRUE` (1), ma verrà verificata in runtime la possibilità di poter create la tabella.
+
+```
+DECLARE
+    CURSOR usr_cursor IS SELECT * FROM users;
+    usr users.%ROWTYPE;
+BEGIN
+    OPEN c1 FOR usr;
+    LOOP usr IN c1
+END;
 ```
 
 # Rigraziamenti
