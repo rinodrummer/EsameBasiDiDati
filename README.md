@@ -39,6 +39,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
         * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
         * [Cursore](#cursore);
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
+1. [SQL dinamico](#sql-dinamico)
 1. [Ringraziamenti](#ringraziamenti);
 
 
@@ -72,11 +73,15 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 
 ## Struttura di uno script
 ```
+-- Funzioni e procedure vanno create con uno statement dedicato.
+
+-- Operazioni (statiche) sui dati e i metadati (creaione di tabelle, etc.);
+
 DECLARE
-    -- Dichiarazione di subtipi
-    -- Dichiarazione di variabili, costanti e procedure
+    -- Dichiarazione di subtipi;
+    -- Dichiarazione di variabili, costanti e procedure;
 BEGIN
-    -- Corpo dello script
+    -- Corpo dello script;
 END;
 ```
 
@@ -486,14 +491,14 @@ END;
 
 
 ### Definizione di procedure e funzioni
-E' scontato ricordare che le procedure non ritornano valore, le funzioni sì.
+E' scontato ricordare che le procedure non ritornano valore **direttamente**, le funzioni sì.
 **ATTENZIONE!** E' importante dire che le procedure e le funzioni devono essere dichiarate con una query dedicata! Non possono essere definite altre dichiarazioni oltre alle stesse!
 
 Per quanto riguarda le procedure, la sintassi è la seguente:
 ```
 CREATE [OR REPLACE] PROCEDURE <nomeProcedura> (
-    [<nomeParametro> [IN OUT] <tipo>] [,
-    [<nomeParametro> [IN OUT] <tipo>]]
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo>] [,
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo>]]
 ) IS   --- Può anche essere usato AS
     [<nomeVarLocale> <tipo>;]
     [<nomeVarLocale> <tipo>;]
@@ -534,17 +539,18 @@ BEGIN
     adjust_salary(emp, 30, emp_salary);
 END;
 ```
-
 La seguente procedura aggiunge un dato valore al salario di un dipendente.
-Può essere visto all'opera [qui](https://livesql.oracle.com/apex/livesql/s/f30wems22by88g8eqhi6oeus5).
+Può essere vista all'opera [qui](https://livesql.oracle.com/apex/livesql/s/f30wems22by88g8eqhi6oeus5).
+
+E' importante far notare che una procedura può **indirettamente** ritornare un valore se una variabile viene passata come paramentro `IN OUT`.
 
 Una procedura può utilizzare la parola chiave `RETURN` per terminare la sua esecuzione, ma non può essere accompagnata da nessun valore.
 
 Mentre la sintassi per dichiarare una funzione è la seguente:
 ```
 CREATE [OR REPLACE] FUNCTION <nomeFunzione> (
-    [<nomeParametro> [IN OUT] <tipo>] [,
-    [<nomeParametro> [IN OUT] <tipo>]]
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo>] [,
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo>]]
 )
 RETURN <tipo>
 AS   --- Può anche essere usato IS
@@ -574,16 +580,25 @@ Il comando, in quanto molto complesso verrà esplicato da quanto segue:
     1. `variabile`: variabile di tipo `VARCHAR2` o `CHAR` di qualsivoglia natura (dichiarazione diretta o ricevuta da query). Può contenere un blocco anonimo.
     1. `blocco anonimo`: blocco di codice in PL/SQL. Deve essere inscritto in una clausola `BEGIN ... END;` (deve terminare con punto e virgola), es.: `BEGIN DMBS_OUTPUT.PUT_LINE('Hello world!') END;`.
 1. `[[RETURNING | BULK COLLECT] INTO <varContenitore>]`: le clausole indicate hanno scopi diversi, ma quasi mai coesistenti:
-    1. `RETURNING INTO <varContenitore>`: utilizzabile per una qualsiasi query DML escluso il `SELECT` (quindi `UPDATE`, `DELETE`, `INSERT`). Conterrà i risultati della query
+    1. `RETURNING INTO <varContenitore>`: utilizzabile per una qualsiasi query DML escluso il `SELECT` (quindi `UPDATE`, `DELETE`, `INSERT`). Conterrà una collection degli elementi interessati dalla query appena eseguita. Sostituibile con una clausola `USING`;
+    1. `BULK COLLECT INTO <varContenitore>`: da utilizzare quando una query `SELECT` ritorna più righe;
+    1. `INTO <varContenitore>`: da utilizzare quando una query `SELECT` ritorna una sola riga;
+1. `USING [IN | OUT | IN OUT] <varPlaceholder>`: vengono assegnati i valori di placeholder che possono essere usati come `IN`, `OUT` oppure `IN OUT`.
 
-Per esempio, supponiamo che diamo la possibilità di definire una tabella ad un utente (caso da considerarsi **solo** a livello **didattico**!), quindi supponiamo di avere la seguente tabella:
+Nella descrizione precedente vi si è potuto leggere spesso il termine **placeholder**, questo rappresenta una stringa che verrà sostituita con un valore indicato nella clausola `USING` (questa operazione di sostituzione è chiamata **binging**).
+_Secondo la documentazione, in contesti come il `RETURNING INTO` e il `BULK COLLECT INTO` è possibile specificare più output binding._
+
+**ATTENZIONE!** Se un elemento viene creato dinamicamente, nella stessa sessione si consiglia di interagire con esso sempre in maniera dinamica.
+
+Ecco un esercizio esempio:
+Supponiamo che diamo la possibilità di definire una tabella ad un utente (caso da considerarsi **solo** a livello **didattico**!), quindi supponiamo di avere la seguente tabella:
 
 ```
-CREATE SEQUENCE user_id_autoinc;
+CREATE SEQUENCE user_id_autoinc;   -- Gestisce l'incremento automatico dell'ID;
 CREATE TABLE users (
     id NUMBER(5) DEFAULT user_id_autoinc.NEXTVAL CONSTRAINT users_id_pk PRIMARY KEY,
     username VARCHAR2(32) NOT NULL CONSTRAINT users_username_uq UNIQUE,
-    is_admin NUMBER(1) DEFAULT 0 CONSTRAINT users_admin_chk CHECK (is_admin IN (0, 1)), -- BOOLEAN
+    is_admin NUMBER(1) DEFAULT 0 CONSTRAINT users_admin_chk CHECK (is_admin IN (0, 1)),   -- BOOLEAN
     custom_table VARCHAR2(1000) NULL
 );
 ```
@@ -592,12 +607,22 @@ Al momento ignoriamo la possibilità di popolare `custom_table` solo se `is_admi
 ```
 DECLARE
     CURSOR usr_cursor IS SELECT * FROM users;
-    usr users.%ROWTYPE;
+    usr users%ROWTYPE;
 BEGIN
-    OPEN c1 FOR usr;
-    LOOP usr IN c1
+    FOR usr IN usr_cursor LOOP
+        IF usr.is_admin = 1 THEN
+            EXECUTE IMMEDIATE usr.custom_table;
+
+            -- Se volessimo eseguire un INSERT nella tabella appena creata, dovremmo avviare la query tramite un EXECUTE IMMEDIATE.
+
+            DBMS_OUTPUT.PUT_LINE(usr.username || '''s table should have been created.');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE(usr.username || ' is not an admin.');
+        END IF;
+    END LOOP;
 END;
 ```
+E' possibile vedere lo script in azione [qui](https://livesql.oracle.com/apex/livesql/s/f4em324mzj360xawduk8kzi33).
 
 # Rigraziamenti
 - Si ringrazia eternamente **Alessandro Rubino** per gli splendidi appunti.
