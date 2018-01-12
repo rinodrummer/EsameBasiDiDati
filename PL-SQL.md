@@ -1,6 +1,6 @@
 # PL/SQL
 
-Tutti i contenuti di questo repo fanno riferimento alla [documentazione ufficiale del linguaggio PL/SQL](https://docs.oracle.com/cloud/latest/db112/LNPLS/toc.htm).
+Tutti i contenuti di questo documento fanno riferimento alla [documentazione ufficiale del linguaggio PL/SQL](https://docs.oracle.com/cloud/latest/db112/LNPLS/toc.htm).
 
 Molti contenuti sono ripresi esattamente come trattati dalla documentazione sopra citata.
 **Si sottolinea anche che la seguente può esser vista come una traduzione e un riassunto della stessa e che lo scopo finale di questa repo è esclusivo a fini DIDATTICI!**
