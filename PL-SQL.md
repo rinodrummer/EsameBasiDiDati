@@ -10,10 +10,11 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 **IMPORTANTE!** Clicca [qui](/SQL.md#viste-view) per leggere di più riguardo le viste (`VIEW`)!
 
 ## Legenda:
-| Simbolo   | Significato               |
-| :-------: | ------------------------- |
-| `[ ... ]` | Elemento opzionale        |
-| `< ... >` | Elemento obbligatorio     |
+| Simbolo   | Significato                   |
+| :-------: | ----------------------------- |
+| `[ ... ]` | Elemento opzionale            |
+| `< ... >` | Elemento obbligatorio         |
+| `/`       | Fine file/Terminazione script |
 
 ## Indice
 1. [Introduzione](#pl-sql):
@@ -48,6 +49,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 | Operatore | Funzione                  |
 | :-------: | ------------------------- |
 | `:=`      | Assegnazione              |
+| `=>`      | Associazione              |
 | `=`       | Uguaglianza               |
 | `<>`      | Disuguaglianza            |
 | `>`       | Maggiore                  |
@@ -75,6 +77,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 ## Struttura di uno script
 ```
 -- Funzioni e procedure vanno create con uno statement dedicato.
+/ -- Fine file
 
 -- Operazioni (statiche) sui dati e i metadati (creaione di tabelle, etc.);
 
@@ -493,13 +496,13 @@ END;
 
 ### Definizione di procedure e funzioni
 E' scontato ricordare che le procedure non ritornano valore **direttamente**, le funzioni sì.
-**ATTENZIONE!** E' importante dire che le procedure e le funzioni devono essere dichiarate con una query dedicata! Non possono essere definite altre dichiarazioni oltre alle stesse!
+**ATTENZIONE!** E' importante dire che le procedure e le funzioni devono essere dichiarate con una query dedicata! Si sconsiglia di definire altri blocchi oltre alla funzione/procedura!
 
 Per quanto riguarda le procedure, la sintassi è la seguente:
 ```
 CREATE [OR REPLACE] PROCEDURE <nomeProcedura> (
-    [<nomeParametro> [IN | OUT | IN OUT] <tipo>] [,
-    [<nomeParametro> [IN | OUT | IN OUT] <tipo>]]
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo> [:= NULL | <valore>]] [,
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo> [:= NULL | <valore>]]]
 ) IS   --- Può anche essere usato AS
     [<nomeVarLocale> <tipo>;]
     [<nomeVarLocale> <tipo>;]
@@ -508,6 +511,11 @@ BEGIN
     [RETURN;]
 END [nomeProcedura];
 ```
+Una procedura può utilizzare la parola chiave `RETURN` per terminare la sua esecuzione, ma non può essere accompagnata da nessun valore.
+
+E' importante far notare che una procedura può **indirettamente** ritornare un valore se una variabile viene passata come paramentro `OUT` o `IN OUT`.
+
+**ATTENZIONE!** il tipo dei parametri non deve definire la dimensione!
 
 Es.:
 ```
@@ -525,9 +533,8 @@ BEGIN
 
     DBMS_OUTPUT.PUT_LINE('Updated salary is: ' || sal);
 END;
-```
+/
 
-```
 DECLARE
     emp NUMBER := 1;
     emp_salary NUMBER(5);
@@ -543,15 +550,11 @@ END;
 La seguente procedura aggiunge un dato valore al salario di un dipendente.
 Può essere vista all'opera [qui](https://livesql.oracle.com/apex/livesql/s/f30wems22by88g8eqhi6oeus5).
 
-E' importante far notare che una procedura può **indirettamente** ritornare un valore se una variabile viene passata come paramentro `IN OUT`.
-
-Una procedura può utilizzare la parola chiave `RETURN` per terminare la sua esecuzione, ma non può essere accompagnata da nessun valore.
-
 Mentre la sintassi per dichiarare una funzione è la seguente:
 ```
 CREATE [OR REPLACE] FUNCTION <nomeFunzione> (
-    [<nomeParametro> [IN | OUT | IN OUT] <tipo>] [,
-    [<nomeParametro> [IN | OUT | IN OUT] <tipo>]]
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo> [:= NULL | <valore>]] [,
+    [<nomeParametro> [IN | OUT | IN OUT] <tipo> [:= NULL | <valore>]]]
 )
 RETURN <tipo>
 AS   --- Può anche essere usato IS
@@ -561,6 +564,34 @@ BEGIN
     -- Operazioni
     RETURN <varLocale>;
 END [nomeFunzione];
+```
+
+I parametri normalmente vengono passati in ordine **posizionale**, ma possono anche essere indicati con una **coppia chiave/valore**.
+
+Es.:
+```
+CREATE OR REPLACE FUNCTION test_keyval (
+    name VARCHAR2,
+    role VARCHAR2 := NULL,
+    salary NUMBER
+)
+RETURN VARCHAR2
+AS
+BEGIN
+    IF role IS NULL THEN
+        RETURN name || ' has a salary of ' || salary;
+    ELSE
+        RETURN name || ' (' || role || ') has a salary of ' || salary;
+    END IF;
+END;
+/
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(test_keyval(
+        salary => 300,
+        name => 'Test'
+    ));
+END;
 ```
 
 
@@ -587,6 +618,7 @@ Il comando, in quanto molto complesso verrà esplicato da quanto segue:
 1. `USING [IN | OUT | IN OUT] <varPlaceholder>`: vengono assegnati i valori di placeholder che possono essere usati come `IN`, `OUT` oppure `IN OUT`.
 
 Nella descrizione precedente vi si è potuto leggere spesso il termine **placeholder**, questo rappresenta una stringa che verrà sostituita con un valore indicato nella clausola `USING` (questa operazione di sostituzione è chiamata **binging**).
+La corrispondenza tra placeholder e variabile 'bindata' è **posizionale**.
 _Secondo la documentazione, in contesti come il `RETURNING INTO` e il `BULK COLLECT INTO` è possibile specificare più output binding._
 
 **ATTENZIONE!** Se un elemento viene creato dinamicamente, nella stessa sessione si consiglia di interagire con esso sempre in maniera dinamica.
