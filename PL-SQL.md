@@ -42,6 +42,8 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
         * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
         * [Cursore](#cursore);
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
+1. [Sequenze](#sequenze);
+1. [Trigger](#trigger)
 1. [SQL dinamico](#sql-dinamico);
 
 
@@ -594,6 +596,50 @@ BEGIN
 END;
 ```
 
+## Sequenze
+Un elemento molto semplice, ma parecchio utile che PL/SQL offre sono le **sequenze** (`SEQUENCE`).
+
+Una sequenza è semplicemente un contatore.
+
+La sintassi è la seguente:
+```
+-- Quando un attributo è seguito dal simbolo di assegnazione (:=), si intende il suo valore di default, anche in omissione del campo stesso.
+
+CREATE SEQUENCE <nome>
+    [START WITH <valore := 0>]
+    [INCREMENT BY <valore := 0>]   -- Può anche essere negativo;
+    [NOMINVALUE | MINVALUE <valore>]   -- Valore minimo possibile: -10<sup>26</sup>;
+    [NOMAXVALUE | MAXVALUE <valore>]   -- Valore massimo possibile: 10<sup>27</sup>;
+    [CYCLE | NOCYCLE]   -- Ricomincia dal valore indicato dallo START WITH quando si supera il massimo o il minimo;
+    [NOCACHE | CACHE <qauntità>]    -- Quantità di valori valori da salvare in cache;
+    [NOORDER | ORDER]   --- ORDER utile solo se la sequenza ha fini di timestamping. Inutile per le primary key;
+```
+
+Es.:
+```
+CREARE SEQUENCE users_id_autoinc;
+```
+
+
+## Trigger
+Il problema del SQL dinamico è la mancanza di una definizione temporale precisa. Per operare quindi sugli eventi sono stati introdotti i **trigger**.
+
+Un trigger può essere avviato sia da eventi `DDL` (`CREATE`, `ALTER`, `DROP`) che da eventi `DML` (`INSERT`, `UPDATE`, `DELETE`), ovviamente solo se **attivato**.
+
+Inoltre, per quanto un trigger possa sembrare simile ad un vincolo (`CONSTRAINT`), la differenza sostanziale sta nel fatto che il trigger viene avviato **solo** alla **creazione di nuove informazioni**, mentre il vincolo puoi aggire sia sulla **creazione di nuove informazioni** che sui **dati già esistenti**.
+
+I vincoli sono molto più semplici da definire ma hanno ovvi limiti: possono operare solo sul proprio campo e sono sprovvisti di logiche complesse, limiti che ovviamente il trigger non ha, a discapito della semplicità.
+
+Un trigger può ovviamente partire solo **prima di uno statement** (`BEFORE`) o **dopo uno statement** (`AFTER`).
+La cosa può sembrare limitante, ma in combinazione con gli eventi con cui opera, esso è molto versatile.
+
+E' anche importante dire che un trigger può anche essere avviato a causa di **combinazioni di eventi**.
+
+La sintassi per creare un trigger è la seguente:
+```
+CREATE TRIGGER
+```
+
 
 ## SQL Dinamico
 La parte precedentemente vista è definita come **statica** in quanto interagisce solo con elementi già definiti.
@@ -601,7 +647,9 @@ La potenzialità di PL/SQL sta nel fatto che possiamo costruire informazioni da 
 
 La sinstassi per l'esecuzione di query dinamicamente è la seguente:
 ```
-EXECUTE IMMEDIATE <query | variabile | blocco anonimo> [[RETURNING | BULK COLLECT] INTO <varContenitore>] [USING [IN | OUT | IN OUT] <varPlaceholder> [, [IN | OUT | IN OUT] <varPlaceholder> ...]];
+EXECUTE IMMEDIATE <query | variabile | blocco anonimo>
+    [[RETURNING | BULK COLLECT] INTO <varContenitore>]
+    [USING [IN | OUT | IN OUT] <varPlaceholder> [, [IN | OUT | IN OUT] <varPlaceholder> ...]];
 ```
 
 Il comando, in quanto molto complesso verrà esplicato da quanto segue:
