@@ -672,10 +672,13 @@ La sintassi per creare un trigger è la seguente:
 ```
 CREATE TRIGGER <nome>
     <BEFORE | AFTER>
-        <evento> [OR
-        [evento [OR ...]]]
+        <evento> [[<colonna>[, <colonna>]] [FOR EACH ROW] OR
+        [evento [[<colonna>[, <colonna>]] [FOR EACH ROW] [OR ...]]]
     ON <tabella>
+    [WHEN (<condizione>)]   -- Se la condizione è specificata su `OLD` e `NEW`, non devono essere preceduti da `:`;
 BEGIN
+    -- Corpo del trigger
+
     -- Operazioni
 END;
 ```
@@ -721,6 +724,20 @@ BEGIN
 END;
 ```
 Entrambi i codici sono perfettamente equivalenti.
+
+Inoltre, in un trigger si ha accesso anche particolari variabili, definite **pseudorecord**: esse rappresentano un record _prima_ dell'esecuzione del trigger (`OLD`) e un record _dopo_ l'esecuzione del trigger (`NEW`).
+
+**N.B.:** Esiste inoltre uno pseudorecord definito `PARENT`, ma non ho ben capito il suo utilizzo.
+
+Ecco la tabella dei valori in base all'evento:
+
+| Evento   | `OLD`            | `NEW`             |
+| :------: | ---------------- | ----------------- |
+| `INSERT` | `NULL`           | Nuovo record      |
+| `UPDATE` | Record originale | Record aggiornato |
+| `INSERT` | Vecchio record   | `NULL`            |
+
+E' inoltre possibile cambiare il nome di questi pseudorecord usando la direttiva `REFERENCING`. Vi si può accedere al valore in esso contenuti nella clausola `WHEN` del trigger (senza essere preceduti da `:`) o all'interno del corpo del trigger (essendo preceduti da `:`).
 
 
 ## SQL Dinamico
