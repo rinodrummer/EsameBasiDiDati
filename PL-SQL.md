@@ -463,9 +463,9 @@ DECLARE
 BEGIN
     OPEN c1;
         LOOP
-            FETCH c1 INTO emp;
             EXIT WHEN c1%NOTFOUND;
 
+            FETCH c1 INTO emp;
             DBMS_OUTPUT.PUT_LINE(TO_CHAR(emp.name));
 
         END LOOP;
@@ -486,9 +486,9 @@ BEGIN
 
     -- Questa clausola LOOP non ha connessione col FOR dello statement precedente!
     LOOP
-        FETCH c1 INTO emp;
         EXIT WHEN c1%NOTFOUND;
-
+        
+        FETCH c1 INTO emp;
         DBMS_OUTPUT.PUT_LINE(TO_CHAR(emp.name));
     END LOOP;
 
