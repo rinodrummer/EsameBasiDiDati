@@ -26,7 +26,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 1. [Strutture di controllo](#strutture-di-controllo);
     1. [Condizioni](#condizioni):
         1. [`IF-ELSIF-ELSE`](#if-elsif-else);
-        1. [`CASE`](#case):
+        1. [`CASE-WHEN`](#case-when):
             * Simple `CASE`;
             * Searched `CASE`;
     1. [Loop](#loop):
@@ -43,8 +43,9 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
         * [Cursore](#cursore);
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
 1. [Sequenze](#sequenze);
-1. [Trigger](#trigger)
+1. [Trigger](#trigger);
 1. [SQL dinamico](#sql-dinamico);
+1. [Funzioni e istruzioni utili](#funzioni-e-istruzioni-utili);
 
 
 ## Operatori
@@ -97,7 +98,7 @@ Le strutture di controllo presenti in PL/SQL sono principalmente condizioni e lo
 ### Condizioni
 Le condizioni vengono espresse con le seguenti sintassi:
 
-### IF-ELSIF-ELSE
+### `IF-ELSIF-ELSE`
 ```
 IF (cond1) THEN
     ...
@@ -108,7 +109,7 @@ ELSE
 END IF;
 ```
 
-#### CASE
+#### `CASE-WHEN`
 E' anche possibile utilizzare la clausola `CASE` con la seguente sintassi, denominata **simple CASE**:
 ```
 CASE grade
@@ -154,7 +155,7 @@ I loop rappresentano un elemento di fondamentale importanza in PL/SQL in quanto 
 
 Vi sono diverse varianti di loop.
 
-#### Simple LOOP
+#### Simple `LOOP`
 ```
 [<<label>>] LOOP
     ...
@@ -224,7 +225,7 @@ END;
 
 <!-- TODO Descrivere CONTINUE -->
 
-#### FOR LOOP
+#### `FOR LOOP`
 Il `FOR LOOP` è un loop principalmente basato sull'utilizzo di un contatore e sui range.
 Esso presenta la seguente sintassi:
 ```
@@ -270,7 +271,7 @@ Per variabili di scope superiore estremo (appartenenti al `DECLARE`) è possibil
 Es.: `main.i`.
 
 
-#### WHILE LOOP
+#### `WHILE LOOP`
 Il `WHILE LOOP` è indicato per l'utilizzo di condizioni a guardia del loop.
 La sintassi è la seguente:
 
@@ -280,7 +281,7 @@ La sintassi è la seguente:
 END LOOP [label];
 ```
 
-#### LOOP con cursori
+#### `LOOP` con cursori
 Un cursore è un particolare tipo di variabile che permette di iterare dei record di una tabella _([vedi qui](#cursore))_.
 Es.:
 **FOR LOOP con cursore**:
@@ -379,7 +380,7 @@ BEGIN
 END;
 ```
 
-#### %TYPE e %ROWTYPE
+#### `%TYPE` e `%ROWTYPE`
 E' anche possibile associare il tipo di una colonna (o di un'altra variabile) alla corrente in dichiarazione, es.:
 ```
 x NUMBER(5) := 10;
@@ -605,9 +606,9 @@ La sintassi è la seguente:
 ```
 -- Quando un attributo è seguito dal simbolo di assegnazione (:=), si intende il suo valore di default, anche in omissione del campo stesso.
 
-CREATE SEQUENCE <nome>
+CREATE SEQUENCE <nomeSequenza>
     [START WITH <valore := 0>]
-    [INCREMENT BY <valore := 0>]   -- Può anche essere negativo;
+    [INCREMENT BY <valore := 1>]   -- Può anche essere negativo;
     [NOMINVALUE | MINVALUE <valore>]   -- Valore minimo possibile: -10<sup>26</sup>;
     [NOMAXVALUE | MAXVALUE <valore>]   -- Valore massimo possibile: 10<sup>27</sup>;
     [CYCLE | NOCYCLE]   -- Ricomincia dal valore indicato dallo START WITH quando si supera il massimo o il minimo;
@@ -620,6 +621,38 @@ Es.:
 CREARE SEQUENCE users_id_autoinc;
 ```
 
+E' inoltre è sempre possibile accedere al valore successivo (es.: `users_id_autoinc.NEXTVAL`), ma al corrente (es.: `users_id_autoinc.CURRVAL`) **SOLO** dopo una chiamata al successivo (essendo questo il nuovo corrente).
+
+Es.:
+```
+-- Errato:
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(users_id_autoinc.NEXTVAL);
+END;
+/
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(users_id_autoinc.CURRVAL);   -- Errore: sequenza users_id_autoinc.CURRVAL non è ancora definita in questa sessione
+END;
+/
+
+-- Corretto:
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(users_id_autoinc.NEXTVAL);
+    DBMS_OUTPUT.PUT_LINE(users_id_autoinc.CURRVAL);
+END;
+```
+
+Per accedere al precedente è necessario sottrarre il valore di incremento (default: 1) aD `users_id_autoinc.NEXTVAL` oppure a `users_id_autoinc.CURRVAL.`.
+
+Es.:
+```
+BEGIN
+    -- Entrambi ritorneranno il valore loro precedente
+    DBMS_OUTPUT.PUT_LINE(users_id_autoinc.NEXTVAL - 1);
+    DBMS_OUTPUT.PUT_LINE(users_id_autoinc.CURRVAL - 1);
+END;
+```
 
 ## Trigger
 Il problema del SQL dinamico è la mancanza di una definizione temporale precisa. Per operare quindi sugli eventi sono stati introdotti i **trigger**.
@@ -637,8 +670,57 @@ E' anche importante dire che un trigger può anche essere avviato a causa di **c
 
 La sintassi per creare un trigger è la seguente:
 ```
-CREATE TRIGGER
+CREATE TRIGGER <nome>
+    <BEFORE | AFTER>
+        <evento> [OR
+        [evento [OR ...]]]
+    ON <tabella>
+BEGIN
+    -- Operazioni
+END;
 ```
+
+All'interno del trigger è possibile specificare se alcune operazione devono essere eseguite in base all'avvenimento di un dato evento (utile se gli eventi sono molteplici).
+
+Esse possono essere analizzate come condizione sia dalla clausola `IF-ELSIF-ELSE` che dalla clausola `CASE-WHEN`.
+
+Es.:
+```
+CREATE OR REPLACE TRIGGER print_emp_operation
+  BEFORE
+    INSERT OR
+    UPDATE OF salary OR
+    DELETE
+  ON employees
+BEGIN
+    IF INSERTING THEN
+      DBMS_OUTPUT.PUT_LINE('Inserting');
+    ELSIF UPDATING('salary') THEN
+      DBMS_OUTPUT.PUT_LINE('Updating salary');
+    ELSIF DELETING THEN
+      DBMS_OUTPUT.PUT_LINE('Deleting');
+  END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER print_emp_operation
+  BEFORE
+    INSERT OR
+    UPDATE OF salary OR
+    DELETE
+  ON employees
+BEGIN
+    CASE
+    WHEN INSERTING THEN
+      DBMS_OUTPUT.PUT_LINE('Inserting');
+    WHEN UPDATING('salary') THEN
+      DBMS_OUTPUT.PUT_LINE('Updating salary');
+    WHEN DELETING THEN
+      DBMS_OUTPUT.PUT_LINE('Deleting');
+  END CASE;
+END;
+```
+Entrambi i codici sono perfettamente equivalenti.
 
 
 ## SQL Dinamico
@@ -704,3 +786,10 @@ BEGIN
 END;
 ```
 E' possibile vedere lo script in azione [qui](https://livesql.oracle.com/apex/livesql/s/f4em324mzj360xawduk8kzi33).
+
+
+## Funzioni e istruzioni utili
+
+### `INSTR`
+
+### `SUBSTR`
