@@ -1,11 +1,10 @@
 # SQL
-
 **SQL** (_Structured Query Language_) è un linguaggio standardizzato per database basati sul modello relazionale (RDBMS) progettato per:
 
-* Creare e modificare schemi di database (**DDL** - _Data Definition Language_);
-* Inserire, modificare e gestire dati memorizzati (**DML** - _Data Manipulation Language_);
-* Interrogare i dati memorizzati (**DQL** - _Data Query Language_);
-* Creare e gestire strumenti di controllo ed accesso ai dati (**DCL** - _Data Control Language_).
+* Creare e modificare schemi di database (**DDL** - _Data Definition Language_): `CREATE`, `ALTER`, `DROP`;
+* Inserire, modificare e gestire dati memorizzati (**DML** - _Data Manipulation Language_): `INSERT`, `UPDATE`, `DELETE`;
+* Interrogare i dati memorizzati (**DQL** - _Data Query Language_): `SELECT`;
+* Creare e gestire strumenti di controllo ed accesso ai dati (**DCL** - _Data Control Language_): `GRANT`, `REVOKE`.
 
 _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikipedia._
 
@@ -20,10 +19,24 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
 1. [Introduzione](#pl-sql):
     * [Legenda](#legenda);
     * [Indice](#indice);
+1. ['Costruire un'iterrogazione](#costruire-un-interrogazione-dql);
 1. [Viste (`VIEW`)](#viste-view);
 
-## Viste (VIEW)
+## Definire i metadati (`DDL`)
+La prima operazione utile per interagire con un DBMS è creare un database. Il database conterrà tutte le nostre tabelle che a loro volta conterranno record di dati.
 
+```
+CREATE DATABASE <nomeDatabase>;
+```
+
+<!-- TODO CONSTRAINT e vincoli -->
+
+
+## Costruire un'interrogazione (`DQL`)
+<!--- TODO descrivere SELECT, JOIN, GROUP BY -->
+
+
+## Viste (VIEW)
 Le viste sono selezioni a cui viene associato un nome, inoltre esse sono principalmente virtuali, possono anche essere memorizzate (ciò comporta solo vantaggi di efficienza).
 
 Su una vista possono essere eseguite solo `SELECT`.
