@@ -518,7 +518,7 @@ Una procedura può utilizzare la parola chiave `RETURN` per terminare la sua ese
 
 E' importante far notare che una procedura può **indirettamente** ritornare un valore se una variabile viene passata come paramentro `OUT` o `IN OUT`.
 
-**ATTENZIONE!** il tipo dei parametri non deve definire la dimensione!
+**ATTENZIONE!** il tipo dei parametri non deve definire la dimensione, ma quello delle variabili sì!
 
 Es.:
 ```
@@ -672,16 +672,25 @@ La sintassi per creare un trigger è la seguente:
 ```
 CREATE TRIGGER <nome>
     <BEFORE | AFTER>
-        <evento> [[<colonna>[, <colonna>]] [FOR EACH ROW] OR
-        [evento [[<colonna>[, <colonna>]] [FOR EACH ROW] [OR ...]]]
+        <evento> [OF [<colonna> [, <colonna>]] OR
+        [<evento> [OF [<colonna> [, <colonna>]] [OR ...]]]
     ON <tabella>
+    [REFERENCING
+        OLD AS <nuovoNomeOld>
+        NEW AS <nuovoNomeNew>
+    ]
+    [FOR EACH ROW]
     [WHEN (<condizione>)]   -- Se la condizione è specificata su `OLD` e `NEW`, non devono essere preceduti da `:`;
+[DECLARE
+    [<nomeVarLocale> <tipo>;]
+]
 BEGIN
     -- Corpo del trigger
 
     -- Operazioni
 END;
 ```
+**ATTENZIONE!** E' importante notare che la clausola `OF <colonna> [, <colonna>]` è validata **SOLO** se l'evento in questione è un `UPDATE` **INOLTRE** un trigger **NON** può operare sulla sua stessa tabella!
 
 All'interno del trigger è possibile specificare se alcune operazione devono essere eseguite in base all'avvenimento di un dato evento (utile se gli eventi sono molteplici).
 
@@ -690,37 +699,37 @@ Esse possono essere analizzate come condizione sia dalla clausola `IF-ELSIF-ELSE
 Es.:
 ```
 CREATE OR REPLACE TRIGGER print_emp_operation
-  BEFORE
-    INSERT OR
-    UPDATE OF salary OR
-    DELETE
-  ON employees
+    BEFORE
+        INSERT OR
+        UPDATE OF salary OR
+        DELETE
+    ON employees
 BEGIN
     IF INSERTING THEN
-      DBMS_OUTPUT.PUT_LINE('Inserting');
+        DBMS_OUTPUT.PUT_LINE('Inserting');
     ELSIF UPDATING('salary') THEN
-      DBMS_OUTPUT.PUT_LINE('Updating salary');
+        DBMS_OUTPUT.PUT_LINE('Updating salary');
     ELSIF DELETING THEN
-      DBMS_OUTPUT.PUT_LINE('Deleting');
-  END IF;
+        DBMS_OUTPUT.PUT_LINE('Deleting');
+    END IF;
 END;
 /
 
 CREATE OR REPLACE TRIGGER print_emp_operation
-  BEFORE
-    INSERT OR
-    UPDATE OF salary OR
-    DELETE
-  ON employees
+    BEFORE
+        INSERT OR
+        UPDATE OF salary OR
+        DELETE
+    ON employees
 BEGIN
     CASE
-    WHEN INSERTING THEN
-      DBMS_OUTPUT.PUT_LINE('Inserting');
-    WHEN UPDATING('salary') THEN
-      DBMS_OUTPUT.PUT_LINE('Updating salary');
-    WHEN DELETING THEN
-      DBMS_OUTPUT.PUT_LINE('Deleting');
-  END CASE;
+        WHEN INSERTING THEN
+            DBMS_OUTPUT.PUT_LINE('Inserting');
+        WHEN UPDATING('salary') THEN
+            DBMS_OUTPUT.PUT_LINE('Updating salary');
+        WHEN DELETING THEN
+            DBMS_OUTPUT.PUT_LINE('Deleting');
+    END CASE;
 END;
 ```
 Entrambi i codici sono perfettamente equivalenti.
@@ -729,7 +738,7 @@ Inoltre, in un trigger si ha accesso anche particolari variabili, definite **pse
 
 **N.B.:** Esiste inoltre uno pseudorecord definito `PARENT`, ma non ho ben capito il suo utilizzo.
 
-Ecco la tabella dei valori in base all'evento:
+Ecco la tabella dei valori che assumeranno in base all'evento:
 
 | Evento   | `OLD`            | `NEW`             |
 | :------: | ---------------- | ----------------- |
@@ -737,7 +746,7 @@ Ecco la tabella dei valori in base all'evento:
 | `UPDATE` | Record originale | Record aggiornato |
 | `INSERT` | Vecchio record   | `NULL`            |
 
-E' inoltre possibile cambiare il nome di questi pseudorecord usando la direttiva `REFERENCING`. Vi si può accedere al valore in esso contenuti nella clausola `WHEN` del trigger (senza essere preceduti da `:`) o all'interno del corpo del trigger (essendo preceduti da `:`).
+E' inoltre possibile cambiare il nome di questi pseudorecord usando la direttiva `REFERENCING`. Vi si può accedere al valore in esso contenuti nella clausola `WHEN` del trigger (senza essere preceduti da `:`) o all'interno del corpo del trigger (essendo preceduti da `:`). Non è possibile cambiare il loro valore.
 
 
 ## SQL Dinamico
