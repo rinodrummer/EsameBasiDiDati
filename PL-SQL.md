@@ -109,7 +109,7 @@ ELSE
 END IF;
 ```
 
-#### `CASE-WHEN`
+### `CASE-WHEN`
 E' anche possibile utilizzare la clausola `CASE` con la seguente sintassi, denominata **simple CASE**:
 ```
 CASE grade
@@ -487,7 +487,7 @@ BEGIN
     -- Questa clausola LOOP non ha connessione col FOR dello statement precedente!
     LOOP
         EXIT WHEN c1%NOTFOUND;
-        
+
         FETCH c1 INTO emp;
         DBMS_OUTPUT.PUT_LINE(TO_CHAR(emp.name));
     END LOOP;
