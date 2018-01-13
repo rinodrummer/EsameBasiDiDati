@@ -40,7 +40,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
     1. [Definizione di tipi personalizzati (subtipi)](#definizione-di-un-subtipo);
     1. [Definizione di variabili e costanti](#definizione-di-variabili-e-costanti):
         * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
-        * [Cursore](#cursore);
+        * [Cursori](#cursori);
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
 1. [Sequenze](#sequenze);
 1. [Trigger](#trigger);
@@ -410,7 +410,7 @@ INSERT INTO employees(id, name, surname, salary)
 VALUES (emp.id, emp.name, emp.surname, emp.salary);
 ```
 
-#### Cursore
+#### Cursori
 Esiste uno speciale tipo di variabile chiamato **cursore**. Questo permette di iterare più righe di una tabella.
 
 Questo tipo di variabile è molto utilizzato.
