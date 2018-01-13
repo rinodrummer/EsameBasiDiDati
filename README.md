@@ -4,8 +4,8 @@ Questo repo è stato creato per riassumere le lezioni del corso di Basi di Dati 
 
 Il repo è strutturato nel seguente modo:
 
-1. [Parte 1: SQL](/SQL.md) _(solo viste)_;
-2. [Parte 2: PL/SQL](/PL-SQL.md) _(completa)_;
+1. [Parte 1: SQL](/SQL.md) _(meno completa)_;
+2. [Parte 2: PL/SQL](/PL-SQL.md) _(più completa)_;
 3. Esempi ed esercizi.
 
 La seconda parte è stata scritta grazie all'utilizzo della [documentazione ufficiale del lingaggio PL/SQL](https://docs.oracle.com/cloud/latest/db112/LNPLS/toc.htm). Molti contenuti sono ripresi esattamente come trattati dalla documentazione sopra citata.
