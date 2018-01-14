@@ -44,8 +44,11 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
 1. [Sequenze](#sequenze);
 1. [Trigger](#trigger);
+    * [Ovviare il mutating table](#ovviare-il-mutating-table);
 1. [SQL dinamico](#sql-dinamico);
 1. [Funzioni e istruzioni utili](#funzioni-e-istruzioni-utili);
+    * [INSTR](#instr);
+    * [SUBSTR](#instr);
 
 
 ## Operatori
@@ -657,7 +660,7 @@ END;
 ## Trigger
 Il problema del SQL dinamico è la mancanza di una definizione temporale precisa. Per operare quindi sugli eventi sono stati introdotti i **trigger**.
 
-Un trigger può essere avviato sia da eventi `DDL` (`CREATE`, `ALTER`, `DROP`) che da eventi `DML` (`INSERT`, `UPDATE`, `DELETE`), ovviamente solo se **attivato**.
+Un trigger può essere avviato sia da eventi `DDL` (`CREATE`, `ALTER`, `DROP` - definito anche **system `TRIGGER`**) che da eventi `DML` (`INSERT`, `UPDATE`, `DELETE` - definito anche **DML `TRIGGER`**), ovviamente solo se **attivato**.
 
 Inoltre, per quanto un trigger possa sembrare simile ad un vincolo (`CONSTRAINT`), la differenza sostanziale sta nel fatto che il trigger viene avviato **solo** alla **creazione di nuove informazioni**, mentre il vincolo puoi aggire sia sulla **creazione di nuove informazioni** che sui **dati già esistenti**.
 
@@ -666,9 +669,11 @@ I vincoli sono molto più semplici da definire ma hanno ovvi limiti: possono ope
 Un trigger può ovviamente partire solo **prima di uno statement** (`BEFORE`) o **dopo uno statement** (`AFTER`).
 La cosa può sembrare limitante, ma in combinazione con gli eventi con cui opera, esso è molto versatile.
 
-E' anche importante dire che un trigger può anche essere avviato a causa di **combinazioni di eventi**.
+E' anche importante dire che un trigger può anche essere avviato a causa di **più di eventi**.
 
-La sintassi per creare un trigger è la seguente:
+Esistono inoltre due tipi di trigger: i **simple `TRIGGER`** (a cui potrei riferirmi più avanti come **trigger semplice**) e i **`COMPOUND TRIGGER`** (a cui potrei riferirmi più avanti come **trigger composto**).
+
+La sintassi per creare un simple trigger è la seguente:
 ```
 CREATE TRIGGER <nome>
     <BEFORE | AFTER>
@@ -690,7 +695,7 @@ BEGIN
     -- Operazioni
 END;
 ```
-**ATTENZIONE!** E' importante notare che la clausola `OF <colonna> [, <colonna>]` è validata **SOLO** se l'evento in questione è un `UPDATE` **INOLTRE** un trigger **NON** può operare sulla sua stessa tabella!
+**ATTENZIONE!** E' importante notare che la clausola `OF <colonna> [, <colonna>]` è validata **SOLO** se l'evento in questione è un `UPDATE` **INOLTRE** un trigger **NON** può operare **direttamente** sulla sua stessa tabella (_trigger ricorsivo_, ritorna l'errore **mutating table**)!
 
 All'interno del trigger è possibile specificare se alcune operazione devono essere eseguite in base all'avvenimento di un dato evento (utile se gli eventi sono molteplici).
 
@@ -746,7 +751,54 @@ Ecco la tabella dei valori che assumeranno in base all'evento:
 | `UPDATE` | Record originale | Record aggiornato |
 | `INSERT` | Vecchio record   | `NULL`            |
 
-E' inoltre possibile cambiare il nome di questi pseudorecord usando la direttiva `REFERENCING`. Vi si può accedere al valore in esso contenuti nella clausola `WHEN` del trigger (senza essere preceduti da `:`) o all'interno del corpo del trigger (essendo preceduti da `:`). Non è possibile cambiare il loro valore.
+E' inoltre possibile cambiare il nome di questi pseudorecord usando la direttiva `REFERENCING`. Vi si può accedere al valore in esso contenuti nella clausola `WHEN` del trigger (senza essere preceduti da `:`) o all'interno del corpo del trigger (essendo preceduti da `:`). E' possibile cambiare **solo** il valore di `NEW` quando il trigger è di tipo `BEFORE`.
+
+### Ovviare il mutating table
+L'errore **mutating table** si presenta quando un trigger è **ricorsivo**, ovvero quando opera sulla stessa tabella oppure quando un un trigger prova ad accedere ad informazioni che vengono modificate da un altro trigger.
+
+Per ovviare il mutating table è possibile utilizzare i trigger composti.
+
+A differenza dei simple trigger, questi permettono di eseguire più statement temporali.
+
+_[Da continuare]_
+
+<!-- Es.:
+> **Problema**: in una tabella `employees` abbiamo una lista di dipendenti. Supponiamo di voler aggiungere il simbolo '\*' al nome ogni volta che il salario di un dipendente aumenta.
+
+**Soluzione**: Supponiamo di avere le seguenti tabelle:
+```
+CREATE TABLE employees (
+    id NUMBER(5) DEFAULT emp_id_autoinc.NEXTVAL CONSTRAINT emp_id_pk PRIMARY KEY,
+    name VARCHAR2(32) NOT NULL,
+    surname VARCHAR2(32) NOT NULL,
+    salary NUMBER(8, 2) DEFAULT ON NULL 300.00 CONSTRAINT emp_salary_chk CHECK (salary >= 250 AND salary < 30000)
+);
+```
+
+```
+CREATE TABLE emp_salary_logs (
+    emp_id NUMBER(5) NOT NULL,
+    salary_increase NUMBER(8, 2) NOT NULL,
+    increased_at TIMESTAMP DEFAULT ON NULL CURRENT_TIMESTAMP,
+    CONSTRAINT emp_fk FOREIGN KEY (emp_id) REFERENCES employees(id)
+);
+```
+
+Trigger di `employees`:
+```
+CREATE OR REPLACE TRIGGER emp_salary_increase
+BEFORE
+    UPDATE OF salary ON employees
+    REFERENCING
+        NEW AS rich
+        OLD AS poor
+    FOR EACH ROW
+WHEN (rich.salary > poor.salary)
+BEGIN
+    INSERT INTO emp_salary_logs(emp_id, salary_increase, increased_at)
+    VALUES (:rich.id, (:rich.salary - :poor.salary), CURRENT_TIMESTAMP);
+END;
+``` -->
 
 
 ## SQL Dinamico
@@ -815,7 +867,122 @@ E' possibile vedere lo script in azione [qui](https://livesql.oracle.com/apex/li
 
 
 ## Funzioni e istruzioni utili
+**IMPORTANTE!** Trovo scontato dire che ovviamente le funzioni possono accettare anche variabili anzichè valori diretti, quindi lo preciso a monte.
+
+### `LENGTH`
+Restituisce la lunghezza della stringa passato come argomento oppure `NULL` se la stringa non ha lunghezza (`''`) o se ha un valore pari a `NULL`.
+
+Sintassi:
+```
+LENGTH(stringa);
+```
+
+Esempi:
+```
+LENGTH('stringa');   -- Ris.: 7;
+
+LENGTH(' ')   -- Ris.: 1;
+
+LENGTH('')   -- Ris.: NULL;
+
+LENGTH()   -- Ris.: NULL;
+```
+
 
 ### `INSTR`
+Restituisce la posizione di una sottostringa (`ago`) in una stringa (`pagliaio`) oppure `0` se la sottostringa non esiste.
+
+E' possibile specificare da che posizione della stringa partire (`posizione_iniziale`, default: 1) e il numero dell'occorenza di cui restituire la posizione (`num_occorenza`, default: 1).
+
+`posizione_iniziale` può essere anche un valore negativo, in questo caso, il controllo avverà dalla fine della stringa fino all'inizio. Il valore minimo utile e `lunghezza`
+
+Sintassi:
+```
+INSTR(pagliaio, ago [, posizione_iniziale := 1 [, num_occorrenza := 1]]);
+```
+
+Esempi:
+```
+INSTR('loreM ipsuM', 'M');   -- Ris.: 5;
+
+INSTR('loreM ipsuM', 'M', 1, 1);   -- Ris.: 5; Equivalente al primo esempio;
+
+INSTR('loreM ipsuM', 'M', 6, 1);   -- Ris.: 11; Inizia a contare dallo spazio;
+
+INSTR('loreM ipsuM', 'M', 1, 2);   -- Ris.: 11 (seconda occorenza di 'M');
+
+INSTR('loreM ipsuM', 'M', -1, 1);   -- Ris.: 11 (prima occorenza di 'M' dalla fine);
+
+INSTR('loreM ipsuM', 'M', -1, 2);   -- Ris.: 5 (seconda occorenza di 'M' dalla fine);
+
+INSTR('loreM ipsuM', 'b');   -- Ris.: 0;
+```
+
 
 ### `SUBSTR`
+Restituisce una sottostringa estratta dalla stringa passata a partire dalla posizione specificata (`posizione_iniziale`) includendo questa, oppure `NULL` se la lunghezza (`lunghezza`, default: `0`) indicata è negativa.
+
+Se `posizione_iniziale` è `0`, viene trattato come `1`.
+Se `posizione_iniziale` è un valore negativo, la sottostringa verrà ricavata dalla fine della stringa.
+
+Sintassi:
+```
+SUBSTR(stringa, posizione_iniziale [, lunghezza := 0]);
+```
+
+Esempi:
+```
+SUBSTR('Lorem ipsum', 1);   -- Ris.: 'Lorem ipsum';
+
+SUBSTR('Lorem ipsum', 3);   -- Ris.: 'rem ipsum';
+
+SUBSTR('Lorem ipsum', 1, 5);   -- Ris.: 'Lorem';
+
+SUBSTR('Lorem ipsum', 0, 5);   -- Ris.: 'Lorem';
+
+SUBSTR('Lorem ipsum', 3, 5);   -- Ris.: 'rem';
+```
+
+
+### `UPPER`
+Restituisce la stringa passata in maiuscolo.
+
+Sintassi:
+```
+UPPER(stringa);
+```
+
+Esempi:
+```
+UPPER('lorem ipsum');   -- Ris.: 'LOREM IPSUM';
+
+UPPER('LOREM IPSUM');   -- Ris.: 'LOREM IPSUM';
+
+UPPER('Lorem Ipsum');   -- Ris.: 'LOREM IPSUM';
+```
+
+### `LOWER`
+Restituisce la stringa passata in minuscolo.
+
+Sintassi:
+```
+LOWER(stringa);
+```
+
+Esempi:
+```
+LOWER('lorem ipsum');   -- Ris.: 'lorem ipsum';
+
+LOWER('LOREM IPSUM');   -- Ris.: 'lorem ipsum';
+
+LOWER('Lorem Ipsum');   -- Ris.: 'lorem ipsum';
+```
+
+
+### `INITCAP`
+
+
+### `REPLACE`
+
+
+### `TRANSLATE`
