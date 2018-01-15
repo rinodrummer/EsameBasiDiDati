@@ -47,8 +47,14 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
     * [Ovviare il mutating table](#ovviare-il-mutating-table);
 1. [SQL dinamico](#sql-dinamico);
 1. [Funzioni e istruzioni utili](#funzioni-e-istruzioni-utili);
-    * [INSTR](#instr);
-    * [SUBSTR](#instr);
+    * [`LENGTH`](#length);
+    * [`INSTR`](#instr);
+    * [`SUBSTR`](#instr);
+    * [`UPPER`](#upper);
+    * [`LOWER`](#lower);
+    * [`INITCAP`](#initcap);
+    * [`REPLACE`](#replace);
+    * [`TRANSLATE`](#translate);
 
 
 ## Operatori
@@ -870,7 +876,7 @@ E' possibile vedere lo script in azione [qui](https://livesql.oracle.com/apex/li
 **IMPORTANTE!** Trovo scontato dire che ovviamente le funzioni possono accettare anche variabili anzichè valori diretti, quindi lo preciso a monte.
 
 ### `LENGTH`
-Restituisce la lunghezza della stringa passato come argomento oppure `NULL` se la stringa non ha lunghezza (`''`) o se ha un valore pari a `NULL`.
+Restituisce la lunghezza della stringa passata come argomento oppure `NULL` se la stringa non ha lunghezza (`''`) o se ha un valore pari a `NULL`.
 
 Sintassi:
 ```
@@ -890,7 +896,7 @@ LENGTH()   -- Ris.: NULL;
 
 
 ### `INSTR`
-Restituisce la posizione di una sottostringa (`ago`) in una stringa (`pagliaio`) oppure `0` se la sottostringa non esiste.
+Restituisce la posizione di una sottostringa (`ago`) in una stringa passata (`pagliaio`) oppure `0` se la sottostringa non esiste.
 
 E' possibile specificare da che posizione della stringa partire (`posizione_iniziale`, default: 1) e il numero dell'occorenza di cui restituire la posizione (`num_occorenza`, default: 1).
 
@@ -923,7 +929,7 @@ INSTR('loreM ipsuM', 'b');   -- Ris.: 0;
 Restituisce una sottostringa estratta dalla stringa passata a partire dalla posizione specificata (`posizione_iniziale`) includendo questa, oppure `NULL` se la lunghezza (`lunghezza`, default: `0`) indicata è negativa.
 
 Se `posizione_iniziale` è `0`, viene trattato come `1`.
-Se `posizione_iniziale` è un valore negativo, la sottostringa verrà ricavata dalla fine della stringa.
+Se `posizione_iniziale` è un valore negativo, la sottostringa verrà ricavata dalla fine della stringa, inoltre `lunghezza` verrà ignorato.
 
 Sintassi:
 ```
@@ -938,9 +944,17 @@ SUBSTR('Lorem ipsum', 3);   -- Ris.: 'rem ipsum';
 
 SUBSTR('Lorem ipsum', 1, 5);   -- Ris.: 'Lorem';
 
-SUBSTR('Lorem ipsum', 0, 5);   -- Ris.: 'Lorem';
+SUBSTR('Lorem ipsum', 0, 5);   -- Ris.: 'Lorem';   -- Equivalente alla precedente;
 
 SUBSTR('Lorem ipsum', 3, 5);   -- Ris.: 'rem';
+
+SUBSTR('Lorem ipsum', -1);   -- Ris.: 'm';
+
+SUBSTR('Lorem ipsum', -5);   -- Ris.: 'ipsum';
+
+SUBSTR('Lorem ipsum', -1, 5);   -- Ris.: 'm';    -- La lunghezza viene ignorata;
+
+SUBSTR('Lorem ipsum', -5, 5);   -- Ris.: 'ipsum';    -- La lunghezza viene ignorata;
 ```
 
 
@@ -980,9 +994,52 @@ LOWER('Lorem Ipsum');   -- Ris.: 'lorem ipsum';
 
 
 ### `INITCAP`
+Restituisce la stringa passata in minuscolo, ma con ogni iniziale in maiuscolo.
+
+Sintassi:
+```
+INITCAP(stringa);
+```
+
+Esempi:
+```
+INITCAP('lorem ipsum');   -- Ris.: 'Lorem Ipsum';
+
+INITCAP('LOREM IPSUM');   -- Ris.: 'Lorem Ipsum';
+
+INITCAP('Lorem Ipsum');   -- Ris.: 'Lorem Ipsum';
+```
 
 
 ### `REPLACE`
+Restituisce la stringa passata (`pagliaio`) sostituendo ogni occorenza di una sottostringa (`ago`) con una stringa di sostituzione passata (`sostituto`) oppure semplcemente le rimuove se questa è vuota.
+
+Sintassi:
+```
+REPLACE(pagliaio, ago[, sostituto]);
+```
+
+Esempi:
+```
+REPLACE('0Lorem0Ipsum0', '0');   -- Ris.: 'LoremIpsum';
+
+REPLACE('0Lorem0Ipsum0', '0', '');   -- Ris.: 'LoremIpsum';   -- Equivalente alla prima;
+
+REPLACE('0Lorem0Ipsum0', '0', NULL);   -- Ris.: 'LoremIpsum';   -- Equivalente alla prima;
+
+REPLACE('0Lorem0Ipsum0', '0', '1');   -- Ris.: '1Lorem1Ipsum1';
+```
 
 
 ### `TRANSLATE`
+Restituisce la stringa passata (`pagliaio`) sostituendo ogni occorenza di un carattere di una sottostringa (`ago`) con un carattere posizionalmente corrispondente ad esso indicato in una stringa di sostituzione passata (`sostituto`).
+
+Sintassi:
+```
+TRANSLATE(pagliaio, ago, sostituto);
+```
+
+Esempi:
+```
+TRANSLATE('1lorem ipsum02', '012', 'ABC');   -- Ris.: 'Blorem ipsumAC';
+```
