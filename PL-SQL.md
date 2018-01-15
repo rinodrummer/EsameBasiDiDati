@@ -49,7 +49,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 1. [Funzioni e istruzioni utili](#funzioni-e-istruzioni-utili);
     * [`LENGTH`](#length);
     * [`INSTR`](#instr);
-    * [`SUBSTR`](#instr);
+    * [`SUBSTR`](#substr);
     * [`UPPER`](#upper);
     * [`LOWER`](#lower);
     * [`INITCAP`](#initcap);
