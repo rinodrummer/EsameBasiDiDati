@@ -420,6 +420,15 @@ E' anche possibile definire una variabile record su una struttura personalizzata
 
 E' anche possibile utilizzare `%TYPE` per indicare il tipo di un campo facente riferimento ad una tabella già esistente.
 
+Es.:
+```
+emp_temp IS RECORD (
+    name employees.name%TYPE,
+    surname employees.name%TYPE,
+    custom_field VARCHAR2(300)
+);
+```
+
 **ATTENZIONE!** L'inserimento in una tabella tramite l'utilizzo di una variabile record avviene in forma canonica!
 
 Es.:
