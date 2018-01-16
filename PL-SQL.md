@@ -413,9 +413,9 @@ Come è possibile notare, è possibile accedere al campo della variabile record 
 
 E' anche possibile definire una variabile record su una struttura personalizzata (che utilizzerà la sintassi per la creazione di una tabella) con la seguente sintassi:
 ```
-<nomeVarRecord> IS RECORD(
-        ...   -- Codice SQL per definire definire la tabella
-    );
+<nomeVarRecord> IS RECORD (
+    ...   -- Codice SQL per definire definire la tabella
+);
 ```
 
 E' anche possibile utilizzare `%TYPE` per indicare il tipo di un campo facente riferimento ad una tabella già esistente.
