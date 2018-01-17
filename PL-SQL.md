@@ -773,7 +773,7 @@ Ecco la tabella dei valori che assumeranno in base all'evento:
 | :------: | ---------------- | ----------------- |
 | `INSERT` | `NULL`           | Nuovo record      |
 | `UPDATE` | Record originale | Record aggiornato |
-| `INSERT` | Vecchio record   | `NULL`            |
+| `DELETE` | Vecchio record   | `NULL`            |
 
 E' inoltre possibile cambiare il nome di questi pseudorecord usando la direttiva `REFERENCING`. Vi si può accedere al valore in esso contenuti nella clausola `WHEN` del trigger (senza essere preceduti da `:`) o all'interno del corpo del trigger (essendo preceduti da `:`). E' possibile cambiare **solo** il valore di `NEW` quando il trigger è di tipo `BEFORE`.
 
