@@ -79,8 +79,8 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
 | Tipo di dato                       | Nome                         |
 | ---------------------------------- | :--------------------------: |
 | Numerico                           | `NUMBER`, `INTEGER`, `REAL`  |
-| Carattere                          | `CHAR`                       |
-| Stringa                            | `VARCHAR2`                   |
+| Carattere, Stringa fissa           | `CHAR`                       |
+| Stringa variabile                  | `VARCHAR2`                   |
 | Booleano (solo var., cost. e fun.) | `BOOLEAN`                    |
 | Data                               | `DATE`                       |
 | Ora                                | `TIME`                       |
