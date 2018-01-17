@@ -10,6 +10,8 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
 
 **IMPORTANTE!** Non riassumerò la teoria presentata durante il corso, ma solamente la sintassi SQL collegata.
 
+**N.B.:** La sintassi presentata segue lo standard **originale** e non lo standard Oracle!
+
 ## Legenda:
 | Simbolo   | Significato                   |
 | :-------: | ----------------------------- |
@@ -64,6 +66,14 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
                 * [Integrità referenziale (`FOREIGN KEY`)](#integrità-referenziale-foreign-key);
                 * [Asserzioni (`ASSERTION`)](#asserzioni-assertion);
     1. [Modifica di tabelle (`ALTER`)](#modifica-di-tabelle-alter);
+        1. [Modificare le colonne di una tabella](#modificare-le-colonne-di-una-tabella):
+            1. [Aggiungere una nuova colonna](#aggiungere-una-nuova-colonna);
+            1. [Modificare una colonna](#modificare-una-colonna);
+            1. [Eliminare una colonna](#eliminare-una-colonna);
+        1. [Modificare i vincoli di una tabella](#Modificare i vincoli di una tabella):
+            1. [Aggiungere un vincolo](#aggiungere-un-vincolo);
+            1. [Eliminare un vincolo](#eliminare-un-vincolo);
+            1. [Modificare un vincolo](#modificare-un-vincolo);
     1. [Eliminazione dei metadati (`DROP`)](#eliminazione-dei-metadati-drop);
 1. [Costruire un'iterrogazione (`DQL`)](#costruire-un-interrogazione-dql);
 1. [Viste (`VIEW`)](#viste-view);
@@ -178,9 +188,45 @@ In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 Esistono anche vincoli di **integrità interrelazionali**. Il più utilizzato è quello di **integrità referenziale**, definito `FOREIGN KEY`.
 Una foreign key è un campo che fa riferimento ad un campo (principalmente una primary key) di un'altra tabella ed è utilizzato per rappresentare un'associazione fra le due.
 Anche vincolo può essere definito in fase creazionale nelle seguenti tre forme:
-1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> FOREIGN KEY REFERENCES <nomeTabella>(<campo>)`;
-1. Alla fine della dichiarazione dei campi: `FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>)`;
-1. Creando una `CONSTRAINT <nomeVincolo> FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>)`;
+1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> FOREIGN KEY REFERENCES <nomeTabella>(<campo>) [ON UPDATE <RESTICT | NO ACTION | CASCADE | SET NULL>] [ON DELETE <RESTICT | NO ACTION | CASCADE | SET NULL>]`;
+1. Alla fine della dichiarazione dei campi: `FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>) [ON UPDATE <RESTICT | NO ACTION | CASCADE | SET NULL>] [ON DELETE <RESTICT | NO ACTION | CASCADE | SET NULL>]`;
+1. Creando una `CONSTRAINT <nomeVincolo> FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>) [ON UPDATE <RESTICT | NO ACTION | CASCADE | SET NULL>] [ON DELETE <RESTICT | NO ACTION | CASCADE | SET NULL>]`;
+
+Come definito dalla sintassi, per una foreign key è anche possibile specifare che operazione compiere in caso di modifica o perdita di informazioni.
+Adesso verranno specificate le varie definizioni per le clausole `ON UPDATE` e `ON DELETE`:
+* `NO ACTION` oppure `RESTRICT` (solo per MySQL): **Default**. Non compie nessuna azione, lasciando i dati invariati;
+* `CASCADE`: Elimina oppure aggiorna automaticamente il valore del campo facente riferimento al dato record (consigliato per `ON UPDATE`);
+* `SET NULL`: Imposta a `NULL` il valore del campo facente riferimento al dato record (consigliato per `ON DELETE`);
+
+Es.:
+Supponiamo di avere le tabelle `roles` e `employees`. Ogni dipendente ha un solo ruolo. Un ruolo piò essere svolto da più dipendenti.
+
+L'associazione presentata è una 1 a molti, quindi la chiave primaria di `roles` viene ereditata da `employees` (vedi l'[esempio generale](#esempio-generale-ddl) di questa sezione).
+
+Essendo la relazione definita nel seguente modo: `ON UPDATE CASCADE ON DELETE NO SET NULL`, otterremo i seguenti risultati:
+
+* Se modificassi l'ID di un ruolo (indicato tra parentesi), per esempio `Capo Reparto (2)` &Implies; `Capo Reparto (10)`, essendoci la clausola a `ON UPDATE CASCADE`, tutti i dipendenti col ruolo di capo reparto verranno aggiornati facendo riferimento al record aggiornato;
+* Se eliminassi il ruolo con ID pari a `3`, essendoci la clausola a `ON DELETE SET NULL`, tutti i dipendenti col ruolo con ID `3` verranno aggiornati avendo valore `NULL`;
+
+Tabella `employees` originale:
+| id  | name     | surname | role_id | salary |
+| :-: | -------- | ------- | :-----: | ------ |
+| 1   | Mario    | Rossi   | **2**   | 3000   |
+| 2   | Ugo      | Bianchi | 3       | 1750   |
+| 2   | Matteo   | Salvini | 5       | 800    |
+| 2   | Rocco    | Lunghi  | **2**   | 3000   |
+| 2   | Bruno    | Corti   | **2**   | 3000   |
+
+Tabella `employees` aggiornata:
+| id  | name     | surname | role_id    | salary |
+| :-: | -------- | ------- | :--------: | ------ |
+| 1   | Mario    | Rossi   | **10**     | 3000   |
+| 2   | Ugo      | Bianchi | **`NULL`** | 1750   |
+| 2   | Matteo   | Salvini | 5          | 800    |
+| 2   | Rocco    | Lunghi  | **10**     | 3000   |
+| 2   | Bruno    | Corti   | **10**     | 3000   |
+
+
 
 
 #### Asserzioni (`ASSERTION`)
@@ -189,14 +235,16 @@ Spesso un campo può anche dipendere da un valore di un altro campo presente in 
 CREATE ASSERTION <nomeAsserzione> CHECK (<condizione>)
 ```
 
+
+### Esempio generale (`DDL`)
 Esempio che racchiude tutte le nozioni appena espresse:
-```
+```sql
 CREATE DATABASE company_db;
 
 CREATE TABLE roles (
     id INTEGER(2) PRIMARY KEY.
     title VARCHAR(20) NOT NULL,
-    min_salary DECIMAL(7, 2) NOT NULL,
+    min_salary DECIMAL(7, 2) NULL DEFAULT 250,
     max_salary DECIMAL(7, 2) NOT NULL,
     CONSTRAINT min_salary_chk CHECK (min_salary >= 250),
     CONSTRAINT max_salary_chk CHECK (max_salary >= 30000)
@@ -206,9 +254,11 @@ CREATE TABLE employees (
     id INTEGER(10) PRIMARY KEY,
     name VARCHAR(32) NOT NULL,
     surname VARCHAR(32) NOT NULL,
-    role_id INTEGER(2) NOT NULL,
+    role_id INTEGER(2),
     salary DECIMAL(7, 2) NOT NULL,
     FOREIGN KEY (role_id) REFERENCES roles(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE ASSERTION emp_salary_chk CHECK (
@@ -216,7 +266,7 @@ CREATE ASSERTION emp_salary_chk CHECK (
         SELECT *
         FROM employees AS emp
         JOIN roles AS role ON emp.role_id = role.id
-        WHERE (emp.salary < role.min_salary) AND (emp.salary > role.min_salary)
+        WHERE emp.salary NOT BETWEEN role.min_salary AND role.min_salary
     )
 )
 ```
@@ -236,11 +286,54 @@ La sintassi generica è:
 ALTER TABLE <nomeTabella> <operazione>
 ```
 
-### Modificare le colonne
+### Modificare le colonne di una tabella
 
 #### Aggiungere una nuova colonna
 ```
-ALTER TABLE
+ALTER TABLE <nomeTabella>
+ADD COLUMN <nomeCampo> <tipoCampo> [NULL | NOT NULL] [DEFAULT <valore>]
+```
+
+
+#### Modificare una colonna
+```
+ALTER TABLE <nomeTabella>
+MODIFY COLUMN <nomeCampo> <tipoCampo> [NULL | NOT NULL] [DEFAULT <valore>]
+```
+
+
+#### Eliminare una colonna
+```
+ALTER TABLE <nomeTabella>
+DROP COLUMN <nomeCampo>
+```
+
+
+### Modificare i vincoli di una tabella
+
+#### Aggiungere un vincolo
+```
+ALTER TABLE <nomeTabella>
+ADD CONSTRAINT <nomeConstraint> <definizione>
+```
+
+
+#### Eliminare un vincolo
+```
+ALTER TABLE <nomeTabella>
+DROP CONSTRAINT <nomeConstraint>
+```
+
+
+#### Modificare un vincolo
+Secondo lo standard del linguaggio, non è possibile modificare direttamente un vincolo, ma può essere **eliminato** e ricreato.
+
+```sql
+ALTER TABLE employees
+DROP CONSTRAINT <nomeConstraint>;
+
+ALTER TABLE employees
+ADD CONSTRAINT <nomeConstraint> <definizioneAggiornato>
 ```
 
 
@@ -251,9 +344,78 @@ DROP <tipoMetadato> <nome>
 ```
 
 Per esempio:
-```
+```sql
 DROP TABLE employees
 ```
+
+**ATTENZIONE!** E' importante far notare che all'eliminazione di un database o di una tabella, i dati in essi contenuti verrano persi!
+
+
+## Gestione dei dati (`DML`)
+Una volta creata la giusta struttura è giunto il momento di gestire i nostri dati.
+E' ovvio dire che i dati che inseriremo/aggiorneremo/elimineremo devo rispettare i vincoli definiti!
+
+### Inserimento di un record (`INSERT`)
+Per inserire un un record in una tabella è possibile usare l'istruzione `INSERT`:
+```
+INSERT INTO <nomeTabella>(<campo> [, <campo>[, ...]])
+VALUES (<valore> [, <valore>[, ...]])
+```
+La corrispondenza tra colonne indicate e valori è **posizionale**.
+
+Es.:
+```sql
+INSERT INTO roles(id, title, min_salary, max_salary)
+VALUES (1, 'Manager', 1500, 3500);
+
+INSERT INTO roles(id, title, min_salary, max_salary)
+VALUES (2, 'Capo Reparto', 1200, 3000);
+```
+
+E' anche possibile inserire in una tabella dati ottenuti da una `SELECT`.
+
+Es.:
+```sql
+INSERT INTO roles(id, title, min_salary, max_salary)
+SELECT * FROM old_roles WHERE id > 2
+```
+
+### Modificare dei record (`UPDATE`)
+Lo statemente di modifica è probabilmente uno dei più pericolosi in quanto la sintassi sembra essere stata scritta per favorire la modifica di tutti i record anziche quella di uno specifico.
+
+```
+UPDATE <nomeTabella>
+SET <campo> = <nuovoValore> [,
+<campo> = <nuovoValore> [, ...]]
+[WHERE <condizione>]
+```
+
+Es.:
+```sql
+UPDATE SET employees
+SET salary = 3000
+```
+I salari di tutti i dipendenti saranno impostati a `3000`.
+
+E' quindi **FONDAMENTALE** fare attenzione alla clausola `WHERE`:
+```sql
+UPDATE SET employees
+SET salary = 3000
+WHERE id = 3
+```
+Modifica del salario a `3000` del solo dipendente con ID pari a `3`.
+
+E' anche possibile definire un aggiornamento sul vecchio valore:
+```sql
+UPDATE SET employees
+SET salary = salary + 1000
+WHERE id = 3
+```
+
+
+### Eliminazione di un record
+Lo statement di eliminazione è probabilmente il più compromettente in quanto
+
 
 ## Costruire un'interrogazione (`DQL`)
 <!--- TODO descrivere SELECT, JOIN, GROUP BY -->
@@ -279,5 +441,6 @@ Es.:
 ```sql
 CREATE VIEW most_payed_emp_by_dep AS (
     SELECT emp.id, emp.name, emp.surname
+    FROM empolyees AS emp
 )
 ```
