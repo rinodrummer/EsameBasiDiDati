@@ -51,6 +51,7 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
 1. [Definizione dei metadati (`DDL`)](#definizione-dei-metadati-ddl);
     1. [Creazione di un database](#creazione-di-un-database);
     1. [Domini: tpi personalizzati](#domini-tipi-personalizzati);
+    1. [Creazione di tabelle](#creazione-di-tabelle);
 1. [Costruire un'iterrogazione (`DQL`)](#costruire-un-interrogazione-dql);
 1. [Viste (`VIEW`)](#viste-view);
 
@@ -80,6 +81,7 @@ CHECK (
 ```
 Supponiamo che `0` sia per gli astenuti/assenti e `31` per la lode.
 
+### Creazione di tabelle
 Un altro elemento fondamentale per la creazione della propria base di dati sono le tabelle.
 Esse conterranno i record di dati.
 
@@ -94,9 +96,50 @@ Ora, tutti i record facenti parte di questa **collezione** (_collection_) seguir
 Es.:
 ```
 1 Mario Rossi 01/01/1980
-2 Matteo Mastri 12/03/1974
+2 John Doe 12/03/1974
 ...
 ```
+
+In SQL, la sintassi per definire quindi la struttura di contenimento, ovvero la tabella, è la seguente:
+```
+CREATE TABLE <nomeTabella> (
+    <nomeCampo> <tipoCampo> [NULL | NOT NULL] [DEFAULT <valore>] [PRIMARY KEY | UNIQUE] [,
+    <nomeCampo> <tipoCampo> [NULL | NOT NULL] [DEFAULT <valore>] [PRIMARY KEY | UNIQUE] [,
+    ...
+    ]] [,
+    CONSTRAINT ...
+    ]
+)
+```
+
+Oppure è possibile creare una tabella utilizzando una query di selezione:
+```
+CREATE TABLE <nomeNuovaTabella> AS (SELECT ...)
+```
+**ATTENZIONE!** Oltre a selezionare la struttura, questa forma seleziona anche i dati che rispondono ad essa, per ovviare a questo problema è possibile indicare la clausola `WHERE 1 = 0` oppure eseguire un `TRUNCATE TABLE <nomeNuovaTabella>` per eliminare i dati presenti.
+
+E' inoltre possibile definire dei **vincoli** sulla seguente tabella.
+Un vincolo è una condizione che il campo deve rispettare per poter essere considerato valido.
+
+I vincoli più semplici e comuni sono i vincoli di integrità intrarelazionale.
+Essi vengono definiti anche `CONSTRAINT` e la sintassi generica per dichiararne uno in una tabella è la seguente:
+```
+-- Dopo aver dichiarato i campi...
+CONSTRAINT <nomeVincolo> <definizione>
+```
+
+E' importante dire che il nome di un vincolo è univoco in tutto il database!
+
+* **Chiave primaria**: indica un campo (o un insieme di campi) che hanno lo scopo di identificare **univocamente** un record della tabella. Hanno valore su tutta la tabella.
+
+In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
+    1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> PRIMARY KEY`;
+    3. Alla fine della dichiarazione dei campi: `PRIMARY KEY (<campo>)`;
+    2. Creando una `CONSTRAINT <nomeVincolo> PRIMARY KEY (<campo> [, <campo>, ...])`;
+
+* **Chiave univoca**: indica un campo (o un insieme di campi) che possono avere valori unici ed univoci in tutta la tabella; vieta la possibilità di dati duplicati sui campi specificati. Hanno valore su tutta la tabella.
+
+* **Vincolo di tupla**: indica un limite di valore che il campo può assumere. Hanno valore solo sul campo dichiarato, inoltre la condizione di veridicità può solo essere verificata sul campo stesso e non su altri della tabella.
 
 <!-- TODO CONSTRAINT, ASSERTION e vincoli -->
 
