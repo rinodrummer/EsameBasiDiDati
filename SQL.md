@@ -8,6 +8,8 @@
 
 _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikipedia._
 
+**IMPORTANTE!** Non riassumerò la teoria presentata durante il corso, ma solamente la sintassi SQL collegata.
+
 ## Legenda:
 | Simbolo   | Significato                   |
 | :-------: | ----------------------------- |
@@ -15,21 +17,88 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
 | `< ... >` | Elemento obbligatorio         |
 | `/`       | Fine file/Terminazione script |
 
+
+## Operatori
+| Operatore | Funzione                  |
+| :-------: | ------------------------- |
+| `=`       | Uguaglianza               |
+| `<>`      | Disuguaglianza            |
+| `>`       | Maggiore                  |
+| `<`       | Minore                    |
+| `>=`      | Maggiore o uguale         |
+| `<=`      | Minore o uguale           |
+| `..`      | Range di valori           |
+| `--`      | Commento su linea singola |
+| `/* */`   | Commento multilinea       |
+
+
+## Tipi di dato
+| Tipo di dato                       | Nome                         |
+| ---------------------------------- | :--------------------------: |
+| Numerico                           | `INTEGER`, `FLOAT`, `DOUBLE` |
+| Carattere, Stringa fissa           | `CHAR`                       |
+| Stringa variabile                  | `VARCHAR`                    |
+| Data                               | `DATE`                       |
+| Ora                                | `TIME`                       |
+| Data/Ora                           | `TIMESTAMP`, `DATETIME`      |
+
 ## Indice
-1. [Introduzione](#pl-sql):
+1. [Introduzione](#sql):
     * [Legenda](#legenda);
+    * [Operatori](#operatori);
+    * [Tipi di dato](#tipi-di-dato);
     * [Indice](#indice);
-1. ['Costruire un'iterrogazione](#costruire-un-interrogazione-dql);
+1. [Definizione dei metadati (`DDL`)](#definizione-dei-metadati-ddl);
+    1. [Creazione di un database](#creazione-di-un-database);
+    1. [Domini: tpi personalizzati](#domini-tipi-personalizzati);
+1. [Costruire un'iterrogazione (`DQL`)](#costruire-un-interrogazione-dql);
 1. [Viste (`VIEW`)](#viste-view);
 
-## Definire i metadati (`DDL`)
+## Definizione dei metadati (`DDL`)
 La prima operazione utile per interagire con un DBMS è creare un database. Il database conterrà tutte le nostre tabelle che a loro volta conterranno record di dati.
 
+### Creazione di un database
 ```
 CREATE DATABASE <nomeDatabase>;
 ```
 
-<!-- TODO CONSTRAINT e vincoli -->
+### Domini: tipi personalizzati
+E' anche possibile definire dei tipi personalizzati basati su tipi primitivi:
+```
+CREATE DOMAIN <nomeDominio> AS <TipoPrimitivo>
+[DEFAULT <valore>]
+[CHECK <expressione booleana | CONSTRAINT>]
+```
+
+Es.:
+```
+CREATE DOMAIN voto AS UNSIGNED INTEGER(2)
+DEFAULT 18
+CHECK (
+    VALUE >= 0 AND VALUE <= 31   -- Il prof. Peron utilizza il nome del dominio anziche la parola chiave 'VALUE': voto >= 0 AND voto <= 31
+)
+```
+Supponiamo che `0` sia per gli astenuti/assenti e `31` per la lode.
+
+Un altro elemento fondamentale per la creazione della propria base di dati sono le tabelle.
+Esse conterranno i record di dati.
+
+Un record (di dati) è una struttura organizzata di informazioni, ovvero un insieme di informazioni con caratteristiche comuni e con un dato ordine.
+
+Un esempio **generico** di record può essere:
+```
+<ID> <nome> <cognome> <dataDiNascita>
+```
+
+Ora, tutti i record facenti parte di questa **collezione** (_collection_) seguiranno l'ordine sopra presentato.
+Es.:
+```
+1 Mario Rossi 01/01/1980
+2 Matteo Mastri 12/03/1974
+...
+```
+
+<!-- TODO CONSTRAINT, ASSERTION e vincoli -->
 
 
 ## Costruire un'interrogazione (`DQL`)
