@@ -108,7 +108,7 @@ Le strutture di controllo presenti in PL/SQL sono principalmente condizioni e lo
 Le condizioni vengono espresse con le seguenti sintassi:
 
 ### `IF-ELSIF-ELSE`
-```
+```sql
 IF (cond1) THEN
     ...
 ELSIF (cond2) THEN
@@ -120,7 +120,7 @@ END IF;
 
 ### `CASE-WHEN`
 E' anche possibile utilizzare la clausola `CASE` con la seguente sintassi, denominata **simple CASE**:
-```
+```sql
 CASE grade
   WHEN 'A' THEN 'Excellent'
   WHEN 'B' THEN 'Very Good'
@@ -140,7 +140,7 @@ EXCEPTION
 ```
 
 La forma alternativa è chiamata **searched CASE** e può essere usata anche in assegnazione ad una variabile, come nell'esempio:
-```
+```sql
 DECLARE
   grade CHAR(1); -- NULL by default
   appraisal VARCHAR2(20);
@@ -172,7 +172,7 @@ END LOOP [label];
 ```
 
 Esempio di loop con direttiva `EXIT`:
-```
+```sql
 DECLARE
     x NUMBER := 0;
 BEGIN
@@ -190,7 +190,7 @@ END;
 ```
 
 Esempio dello stesso loop con direttiva `EXIT WHEN`:
-```
+```sql
 DECLARE
     x NUMBER := 0;
 BEGIN
@@ -209,7 +209,7 @@ Come visto dal codice presentante la sintassi, è possibile definire una label p
 Ciò può essere molto utile quando si presenta la neccessità di terminare loop più esterni rispetto al corrente o per casi di chiusura veloce.
 
 Es.:
-```
+```sql
 DECLARE
     x NUMBER := 0;
     y NUMBER := 0;
@@ -245,7 +245,7 @@ END LOOP [label];
 
 La clausola `REVERSE` consente di iterare il range in maniera inversa.
 Es.:
-```
+```sql
 BEGIN
     FOR i IN REVERSE 1..3 LOOP
         DBMS_OUTPUT.PUT_LINE(i);
@@ -262,7 +262,7 @@ L'`indice` ha uno scope definito solo all'interno del loop.
 
 E' importante notare che se vi è una variabile con lo stesso nome, ma con scope **superiore**, questa non viene sovrascritta.
 Es.:
-```
+```sql
 DECLARE
   i NUMBER := 5;
   first NUMBER := 1;
@@ -294,7 +294,7 @@ END LOOP [label];
 Un cursore è un particolare tipo di variabile che permette di iterare dei record di una tabella _([vedi qui](#cursore))_.
 Es.:
 **FOR LOOP con cursore**:
-```
+```sql
 DECLARE
     v_employees employees%ROWTYPE;
     CURSOR c1 IS
@@ -316,7 +316,7 @@ END;
 Il codice precedente verrà eseguito un massimo di 10 volte oppure fino a quando il fetching del cursore non ritornerà NULL.
 
 E' inoltre possibile iterare un cursore con l'utilizzo di una [**variabile record**](#type-e-rowtype):
-```
+```sql
 DECLARE
     CURSOR c1 IS
         SELECT id, name
@@ -330,7 +330,7 @@ END;
 ```
 
 Oppure è altrettanto possibile iterare il risultato di una clausola `SELECT`:
-```
+```sql
 BEGIN
     FOR emp IN (
         SELECT name || ' ' || surname AS full_name, salary * 10 AS dream_salary
@@ -349,12 +349,12 @@ Altri contenuti riguardanti le iterazioni di cursori possono essere trovati pros
 
 ### Definizione di un subtipo
 Un subtipo è un tipo di dato personalizzato basato su un tipo primitivo.
-```
+```sql
 SUBTYPE Word IS CHAR(6);
 SUBTYPE Text IS VARCHAR2(15);
 ```
 
-La sintassi di dichiaraione è la seguente:
+La sintassi di dichiarazione è la seguente:
 ```
 SUBTYPE <nomeSubtipo> IS [<tipoBase>(dim) | RANGE <basso>..<alto>] [NOT NULL];
 ```
@@ -368,7 +368,7 @@ Le variabili e le costanti vengono dichiarate con la seguente sintassi:
 ```
 
 Es.:
-```
+```sql
 x NUMBER := 10;
 y NUMBER := 5;
 max NUMBER;
@@ -381,7 +381,7 @@ Come è possibile notare, una variabile può non ricevere assegnazione alla crea
 Bisogna fare assoluta attenzione a questo caso: una variabile di questo tipo, specialmente nel contesto numerico non può essere usata come valore incrementale.
 
 Es.:
-```
+```sql
 DECLARE
     counter INTEGER;   -- counter = NULL
 BEGIN
@@ -391,7 +391,7 @@ END;
 
 #### `%TYPE` e `%ROWTYPE`
 E' anche possibile associare il tipo di una colonna (o di un'altra variabile) alla corrente in dichiarazione, es.:
-```
+```sql
 x NUMBER(5) := 10;
 y x%TYPE := 5;
 
@@ -399,7 +399,7 @@ emp_salary employees.salary%TYPE;
 ```
 
 E' inoltre anche possibile dichiarare un elemento che fa riferimento alla **totale** struttura di una tabella, ovvero una **variabile _record_**:
-```
+```sql
 DECLARE
     emp employees%ROWTYPE;
 BEGIN
@@ -421,7 +421,7 @@ E' anche possibile definire una variabile record su una struttura personalizzata
 E' anche possibile utilizzare `%TYPE` per indicare il tipo di un campo facente riferimento ad una tabella già esistente.
 
 Es.:
-```
+```sql
 emp_temp IS RECORD (
     name employees.name%TYPE,
     surname employees.name%TYPE,
@@ -432,7 +432,7 @@ emp_temp IS RECORD (
 **ATTENZIONE!** L'inserimento in una tabella tramite l'utilizzo di una variabile record avviene in forma canonica!
 
 Es.:
-```
+```sql
 INSERT INTO employees(id, name, surname, salary)
 VALUES (emp.id, emp.name, emp.surname, emp.salary);
 ```
@@ -448,7 +448,7 @@ CURSOR <nome> IS <SELECT ...>;
 ```
 
 Questa dichiarazione viene utilizzata principalmente in contesti _statici_ e si può interagire con cursori dichiarati in questo modo diretto tramite un'iterazione dello stesso. Es.:
-```
+```sql
 DECLARE
     CURSOR c1 IS
         SELECT id, name
@@ -462,7 +462,7 @@ END;
 ```
 
 Oppure con le clausole `OPEN-FETCH-CLOSE`:
-```
+```sql
 DECLARE
     emp employees%ROWTYPE;
 
@@ -480,7 +480,7 @@ END;
 E' importante notare che in questa forma, è necessario iterare il fetching per ottenere più risultati.
 
 N.B.: Per un corretto funzionamento di un fetching iterato in maniera indefinita, l'approccio migliore è il seguente:
-```
+```sql
 DECLARE
     emp employees%ROWTYPE;
 
@@ -501,7 +501,7 @@ END;
 ```
 
 Mentre per contesti _dinamici_ è possibile utilizzare i `REF CURSOR`, ovvero cursori in cui verranno selezionati elementi in posizioni diverse dalla dichiarazione di questo:
-```
+```sql
 DECLARE
     emp employees%ROWTYPE;
 
@@ -548,7 +548,7 @@ E' importante far notare che una procedura può **indirettamente** ritornare un 
 **ATTENZIONE!** il tipo dei parametri non deve definire la dimensione, ma quello delle variabili sì!
 
 Es.:
-```
+```sql
 CREATE PROCEDURE adjust_salary (
     emp_id NUMBER,
     adj NUMBER,
@@ -599,7 +599,7 @@ END [nomeFunzione];
 I parametri normalmente vengono passati in ordine **posizionale**, ma possono anche essere indicati con una **coppia chiave/valore**.
 
 Es.:
-```
+```sql
 CREATE OR REPLACE FUNCTION test_keyval (
     name VARCHAR2,
     role VARCHAR2 := NULL,
@@ -644,17 +644,17 @@ CREATE SEQUENCE <nomeSequenza>
 ```
 
 Es.:
-```
+```sql
 CREARE SEQUENCE users_id_autoinc;
 ```
 
 E' inoltre è sempre possibile accedere al valore successivo (es.: `users_id_autoinc.NEXTVAL`), ma al corrente (es.: `users_id_autoinc.CURRVAL`) **SOLO** dopo una chiamata al successivo (essendo questo il nuovo corrente).
 
 Es.:
-```
+```sql
 -- Errato:
 BEGIN
-    DBMS_OUTPUT.PUT_LINE(users_id_autoinc.NEXTVAL);
+    DBMS_OUTPUT.PUT_LINE(users_id_autoinc);
 END;
 /
 
@@ -670,10 +670,10 @@ BEGIN
 END;
 ```
 
-Per accedere al precedente è necessario sottrarre il valore di incremento (default: 1) aD `users_id_autoinc.NEXTVAL` oppure a `users_id_autoinc.CURRVAL.`.
+Per accedere al precedente è necessario sottrarre il valore di incremento (default: 1) ad `users_id_autoinc.NEXTVAL` oppure a `users_id_autoinc.CURRVAL`.
 
 Es.:
-```
+```sql
 BEGIN
     -- Entrambi ritorneranno il valore loro precedente
     DBMS_OUTPUT.PUT_LINE(users_id_autoinc.NEXTVAL - 1);
@@ -726,7 +726,7 @@ All'interno del trigger è possibile specificare se alcune operazione devono ess
 Esse possono essere analizzate come condizione sia dalla clausola `IF-ELSIF-ELSE` che dalla clausola `CASE-WHEN`.
 
 Es.:
-```
+```sql
 CREATE OR REPLACE TRIGGER print_emp_operation
     BEFORE
         INSERT OR
@@ -858,7 +858,7 @@ _Secondo la documentazione, in contesti come il `RETURNING INTO` e il `BULK COLL
 Ecco un esercizio esempio:
 Supponiamo che diamo la possibilità di definire una tabella ad un utente (caso da considerarsi **solo** a livello **didattico**!), quindi supponiamo di avere la seguente tabella:
 
-```
+```sql
 CREATE SEQUENCE user_id_autoinc;   -- Gestisce l'incremento automatico dell'ID;
 CREATE TABLE users (
     id NUMBER(5) DEFAULT user_id_autoinc.NEXTVAL CONSTRAINT users_id_pk PRIMARY KEY,
@@ -869,7 +869,7 @@ CREATE TABLE users (
 ```
 Al momento ignoriamo la possibilità di popolare `custom_table` solo se `is_admin` è `TRUE` (1), ma verrà verificata in runtime la possibilità di poter create la tabella.
 
-```
+```sql
 DECLARE
     CURSOR usr_cursor IS SELECT * FROM users;
     usr users%ROWTYPE;
