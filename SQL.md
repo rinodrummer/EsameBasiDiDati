@@ -56,13 +56,13 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
         1. Definizione di record;
         1. Creare la tabella;
         1. Esprimere i vincoli (`CONSTRAINT`):
-            * Integrità interrelazionale:
-                1. Chiave primaria (`PRIMARY KEY`);
-                1. Chiave univoca (`UNIQUE`);
-                1. Vincolo di dominio (`CHECK`);
-            * Integrità intrarelazionale:
-                * Integrità referenziale (`FOREIGN KEY`);
-                * Le asserzioni (`ASSERTION`);
+            * [Vincoli di integrità intrarelazionale](#vincoli-di-integrità-intrarelazionale):
+                1. [Chiave primaria (`PRIMARY KEY`)](#chiave-primaria-primary-key);
+                1. [Chiave univoca (`UNIQUE`)](#chiave-univoca-unique);
+                1. [Vincolo di dominio (`CHECK`)](#vincolo-di-dominio-check);
+            * [Vincoli di integrità interrelazionale](#vincoli-di-integrità-interrelazionale):
+                * [Integrità referenziale (`FOREIGN KEY`)](#integrità-referenziale-foreign-key);
+                * [Asserzioni (`ASSERTION`)](#asserzioni-assertion);
     1. [Modifica di tabelle (`ALTER`)](#modifica-di-tabelle-alter);
     1. [Eliminazione dei metadati (`DROP`)](#eliminazione-dei-metadati-drop);
 1. [Costruire un'iterrogazione (`DQL`)](#costruire-un-interrogazione-dql);
@@ -183,7 +183,7 @@ Anche vincolo può essere definito in fase creazionale nelle seguenti tre forme:
 1. Creando una `CONSTRAINT <nomeVincolo> FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>)`;
 
 
-#### Le asserzioni (`ASSERTION`)
+#### Asserzioni (`ASSERTION`)
 Spesso un campo può anche dipendere da un valore di un altro campo presente in un'altra tabella, per esprimere questa condizione è possibile definire un'**asserzione**:
 ```
 CREATE ASSERTION <nomeAsserzione> CHECK (<condizione>)
@@ -220,6 +220,9 @@ CREATE ASSERTION emp_salary_chk CHECK (
     )
 )
 ```
+
+**IMPORTANTE!** Le asserzioni non sono quasi più supportate a fini effettivi, ma il prof. Peron ne ha molta considerazione.
+
 
 ### Modifica di tabelle (`ALTER`)
 La modifica di metadati è principalmente applicata alle sole tabelle.
