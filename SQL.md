@@ -52,7 +52,7 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
 1. [Definizione dei metadati (`DDL`)](#definizione-dei-metadati-ddl);
     1. [Creazione di un database](#creazione-di-un-database);
     1. [Domini: tpi personalizzati](#domini-tipi-personalizzati);
-    1. [Creazione di tabelle](#creazione-di-tabelle):
+    1. [Creazione di tabelle e vincoli (`CREATE`)](#creazione-di-tabelle-e-vincoli-create):
         1. Definizione di record;
         1. Creare la tabella;
         1. Esprimere i vincoli (`CONSTRAINT`):
@@ -63,6 +63,8 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
             * Integrità intrarelazionale:
                 * Integrità referenziale (`FOREIGN KEY`);
                 * Le asserzioni (`ASSERTION`);
+    1. [Modifica di tabelle (`ALTER`)](#modifica-di-tabelle-alter);
+    1. [Eliminazione dei metadati (`DROP`)](#eliminazione-dei-metadati-drop);
 1. [Costruire un'iterrogazione (`DQL`)](#costruire-un-interrogazione-dql);
 1. [Viste (`VIEW`)](#viste-view);
 
@@ -92,7 +94,7 @@ CHECK (
 ```
 Supponiamo che `0` sia per gli astenuti/assenti e `31` per la lode.
 
-### Creazione di tabelle
+### Creazione di tabelle e vincoli (`CREATE`)
 Un altro elemento fondamentale per la creazione della propria base di dati sono le tabelle.
 Esse conterranno i record di dati.
 
@@ -132,6 +134,8 @@ CREATE TABLE <nomeNuovaTabella> AS (SELECT ...)
 E' inoltre possibile definire dei **vincoli** sulla seguente tabella.
 Un vincolo è una condizione che il campo deve rispettare per poter essere considerato valido.
 
+
+### Vincoli di integrità intrarelazionale
 I vincoli più semplici e comuni sono i vincoli di **integrità intrarelazionale**.
 Essi vengono definiti anche `CONSTRAINT` e la sintassi generica per dichiararne uno in una tabella è la seguente:
 ```
@@ -141,21 +145,26 @@ CONSTRAINT <nomeVincolo> <definizione> [ENABLE | DISABLE]
 
 E' importante dire che il nome di un vincolo è univoco in tutto il database!
 
-* **Chiave primaria**: indica un campo (o un insieme di campi) che hanno lo scopo di identificare **univocamente** un record della tabella. Hanno valore su tutta la tabella.
+#### Chiave primaria (`PRIMARY KEY`)
+Indica un campo (o un insieme di campi) che hanno lo scopo di identificare **univocamente** un record della tabella. Hanno valore su tutta la tabella.
 
 In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> PRIMARY KEY`;
 1. Alla fine della dichiarazione dei campi: `PRIMARY KEY (<campo>)`;
 1. Creando una `CONSTRAINT <nomeVincolo> PRIMARY KEY (<campo> [, <campo>, ...])`;
 
-* **Chiave univoca**: indica un campo (o un insieme di campi) che possono avere valori unici ed univoci in tutta la tabella; vieta la possibilità di dati duplicati sui campi specificati. Hanno valore su tutta la tabella.
+
+#### Chiave univoca (`UNIQUE`)
+Indica un campo (o un insieme di campi) che possono avere valori unici ed univoci in tutta la tabella; vieta la possibilità di dati duplicati sui campi specificati. Hanno valore su tutta la tabella.
 
 In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> UNIQUE`;
 1. Alla fine della dichiarazione dei campi: `UNIQUE (<campo>)`;
 1. Creando una `CONSTRAINT <nomeVincolo> UNIQUE (<campo> [, <campo>, ...])`;
 
-* **Vincolo di tupla**: indica un limite di valore che il campo (o un insieme di campi) può assumere.
+
+#### Vincolo di dominio (`CHECK`)
+Indica un limite di valore che il campo (o un insieme di campi) può assumere.
 
 In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> CHECK (<condizione>)`;
@@ -163,6 +172,9 @@ In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 1. Creando una `CONSTRAINT <nomeVincolo> CHECK (<condizione>)`;
 
 
+### Vincoli di integrità interrelazionale
+
+#### Integrità referenziale (`FOREIGN KEY`)
 Esistono anche vincoli di **integrità interrelazionali**. Il più utilizzato è quello di **integrità referenziale**, definito `FOREIGN KEY`.
 Una foreign key è un campo che fa riferimento ad un campo (principalmente una primary key) di un'altra tabella ed è utilizzato per rappresentare un'associazione fra le due.
 Anche vincolo può essere definito in fase creazionale nelle seguenti tre forme:
@@ -170,6 +182,8 @@ Anche vincolo può essere definito in fase creazionale nelle seguenti tre forme:
 1. Alla fine della dichiarazione dei campi: `FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>)`;
 1. Creando una `CONSTRAINT <nomeVincolo> FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>)`;
 
+
+#### Le asserzioni (`ASSERTION`)
 Spesso un campo può anche dipendere da un valore di un altro campo presente in un'altra tabella, per esprimere questa condizione è possibile definire un'**asserzione**:
 ```
 CREATE ASSERTION <nomeAsserzione> CHECK (<condizione>)
@@ -207,6 +221,36 @@ CREATE ASSERTION emp_salary_chk CHECK (
 )
 ```
 
+### Modifica di tabelle (`ALTER`)
+La modifica di metadati è principalmente applicata alle sole tabelle.
+
+E' infatti possibile:
+* Modificare le colonne di una tabella;
+* Modificare<sup>(\*)</sup> i vincoli di una tabella;
+
+La sintassi generica è:
+```
+ALTER TABLE <nomeTabella> <operazione>
+```
+
+### Modificare le colonne
+
+#### Aggiungere una nuova colonna
+```
+ALTER TABLE
+```
+
+
+### Creazione di metadati (`CREATE`)
+Il `DROP` è la funzione di eliminazione ed utilizza la seguente sintassi:
+```
+DROP <tipoMetadato> <nome>
+```
+
+Per esempio:
+```
+DROP TABLE employees
+```
 
 ## Costruire un'interrogazione (`DQL`)
 <!--- TODO descrivere SELECT, JOIN, GROUP BY -->
