@@ -134,17 +134,17 @@ E' importante dire che il nome di un vincolo è univoco in tutto il database!
 
 In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 
-    1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> PRIMARY KEY`;
-    3. Alla fine della dichiarazione dei campi: `PRIMARY KEY (<campo>)`;
-    2. Creando una `CONSTRAINT <nomeVincolo> PRIMARY KEY (<campo> [, <campo>, ...])`;
+1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> PRIMARY KEY`;
+1. Alla fine della dichiarazione dei campi: `PRIMARY KEY (<campo>)`;
+1. Creando una `CONSTRAINT <nomeVincolo> PRIMARY KEY (<campo> [, <campo>, ...])`;
 
 * **Chiave univoca**: indica un campo (o un insieme di campi) che possono avere valori unici ed univoci in tutta la tabella; vieta la possibilità di dati duplicati sui campi specificati. Hanno valore su tutta la tabella.
 
 In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 
-    1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> UNIQUE`;
-    3. Alla fine della dichiarazione dei campi: `UNIQUE (<campo>)`;
-    2. Creando una `CONSTRAINT <nomeVincolo> UNIQUE (<campo> [, <campo>, ...])`;
+1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> UNIQUE`;
+1. Alla fine della dichiarazione dei campi: `UNIQUE (<campo>)`;
+1. Creando una `CONSTRAINT <nomeVincolo> UNIQUE (<campo> [, <campo>, ...])`;
 
 * **Vincolo di tupla**: indica un limite di valore che il campo può assumere. Hanno valore solo sul campo dichiarato, inoltre la condizione di veridicità può solo essere verificata sul campo stesso e non su altri della tabella.
 
