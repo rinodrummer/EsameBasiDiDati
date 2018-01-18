@@ -75,6 +75,10 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
             1. [Eliminare un vincolo](#eliminare-un-vincolo);
             1. [Modificare un vincolo](#modificare-un-vincolo);
     1. [Eliminazione dei metadati (`DROP`)](#eliminazione-dei-metadati-drop);
+1. [Gestione dei dati (`DML`)](#gestione-dei-dati-dml):
+    1. [Inserimento di un record (`INSERT`)](#inserimento-di-un-record-insert);
+    1. [Modificare dei record (`UPDATE`)](#modificare-dei-record-update);
+    1. [Eliminazione di record (`DELETE`)](#eliminazione-di-record-delete);
 1. [Costruire un'iterrogazione (`DQL`)](#costruire-un-interrogazione-dql);
 1. [Viste (`VIEW`)](#viste-view);
 
@@ -413,12 +417,67 @@ WHERE id = 3
 ```
 
 
-### Eliminazione di un record
-Lo statement di eliminazione è probabilmente il più compromettente in quanto
+### Eliminazione di record (`DELETE`)
+Lo statement di eliminazione è probabilmente il più compromettente in quanto elimina definitivamente uno o più record. Può anche eliminare tutti i record, ma la tabella rimarrà.
+
+La sintassi è la seguente:
+```
+DELETE [*] FROM <nomeTabella>
+[WHERE <condizione>]
+```
+
+Come per l'update, anche qui bisogna fare molta attenzione alla clausola `WHERE`!
+
+Es.:
+```sql
+DELETE FROM employees
+```
+Elimina tutti i dipendenti.
+
+
+```sql
+DELETE FROM employees
+WHERE id = 3
+```
+Elimina solo il dipendete con ID pari a `3`.
 
 
 ## Costruire un'interrogazione (`DQL`)
 <!--- TODO descrivere SELECT, JOIN, GROUP BY -->
+
+Un'interrogazione è basata principalmente dalla clausola `SELECT`.
+
+La sintassi completa è la seguente:
+```
+SELECT [ALL | DISTINCT] <* | <campo> [AS <nuovoNome>] | <campoAggregato> [AS <nuovoNome>] [, [campo [AS <nuovoNome> ...]]>>
+FROM <nomeTabella> [AS <alias>]
+[[INNER | LEFT | RIGHT | FULL OUTER] JOIN <nomeTabella> [AS <alias>] ON <condizioneAssociazione>]
+[[[INNER | LEFT | RIGHT | FULL OUTER] JOIN <nomeTabella> [AS <alias>] ON <condizioneAssociazione>] ...]
+[WHERE <condizione | condizioneSuSubquery>]
+[GROUP BY <campo> [, <campo>[, ...]]] [HAVING <condizioneRagruppamento>]
+[ORDER BY <campo> [, <campo>[, ...]]] [ASC | DESC]
+```
+
+### `IS NULL`, `IS NOT NULL`
+* `IS NULL`: Verifica se il campo è `NULL`;
+* `IS NOT NULL`: Verifica se il campo **NON** è `NULL`;
+
+### `EXISTS`, `NOT EXISTS`
+* `EXISTS`: Verifica che la riga o il campo esistano in una tabella (indicata da subquery);
+* `NOT EXISTS`: Verifica che la riga o il campo **NON** esistano in una tabella (indicata da subquery);
+
+### `LIKE`, `NOT LIKE`
+* `LIKE`: Verifica se il campo ha un valore che risponde alla stringa passata;
+* `NOT LIKE`: rifica se il campo **NON** ha un valore che risponde alla stringa passata;
+
+### `IN`, `NOT IN`
+* `IN`: Verifica che il campo ha un valore presente nella lista passata;
+* `NOT `: Verifica che il campo **NON** ha un valore presente nella lista passata;
+
+### `BETWEEN`, `NOT BETWEEN`
+* `BETWEEN`: Verifica che il campo ha un valore compreso nel range indicato;
+* `NOT `: Verifica che il campo **NON** ha un valore compreso nel range indicatp;
+
 
 
 ## Viste (VIEW)
