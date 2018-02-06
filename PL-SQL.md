@@ -41,6 +41,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
     1. [Definizione di variabili e costanti](#definizione-di-variabili-e-costanti):
         * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
         * [Cursori](#cursori);
+            * [`REF CURSOR` (`SYS_REFCURSOR`) - cursori dinamici](ref-cursor-sys-refcursor-cursori-dinamici)
     1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
 1. [Sequenze](#sequenze);
 1. [Trigger](#trigger);
@@ -499,6 +500,8 @@ BEGIN
     CLOSE c1;
 END;
 ```
+
+##### `REF CURSOR` (`SYS_REFCURSOR`) - cursori dinamici
 
 Mentre per contesti _dinamici_ è possibile utilizzare i `REF CURSOR`, ovvero cursori in cui verranno selezionati elementi in posizioni diverse dalla dichiarazione di questo:
 ```sql
