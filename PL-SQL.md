@@ -700,6 +700,8 @@ E' anche importante dire che un trigger può anche essere avviato a causa di **p
 
 Esistono inoltre due tipi di trigger: i **simple `TRIGGER`** (a cui potrei riferirmi più avanti come **trigger semplice**) e i **`COMPOUND TRIGGER`** (a cui potrei riferirmi più avanti come **trigger composto**).
 
+**ATTENZIONE!** Per definizione, un trigger NON è considerato dinamico, ma bensì **asincrono**! Ovvero definito solo al verificarsi dell'evento!
+
 La sintassi per creare un simple trigger è la seguente:
 ```
 CREATE TRIGGER <nome>
