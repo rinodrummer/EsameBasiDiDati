@@ -213,6 +213,7 @@ Essendo la relazione definita nel seguente modo: `ON UPDATE CASCADE ON DELETE NO
 * Se eliminassi il ruolo con ID pari a `3`, essendoci la clausola a `ON DELETE SET NULL`, tutti i dipendenti col ruolo con ID `3` verranno aggiornati avendo valore `NULL`;
 
 Tabella `employees` originale:
+
 | id  | name     | surname | role_id | salary |
 | :-: | -------- | ------- | :-----: | ------ |
 | 1   | Mario    | Rossi   | **2**   | 3000   |
@@ -222,6 +223,7 @@ Tabella `employees` originale:
 | 2   | Bruno    | Corti   | **2**   | 3000   |
 
 Tabella `employees` aggiornata:
+
 | id  | name     | surname | role_id    | salary |
 | :-: | -------- | ------- | :--------: | ------ |
 | 1   | Mario    | Rossi   | **10**     | 3000   |
