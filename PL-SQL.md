@@ -42,7 +42,7 @@ Si esorta inoltre all'utilizzo di [Live SQL](https://livesql.oracle.com/) di Ora
         * [`%TYPE` e `%ROWTYPE` (var. **record**)](#type-e-rowtype);
         * [Cursori](#cursori);
             * [`REF CURSOR` (`SYS_REFCURSOR`) - cursori dinamici](https://github.com/rinodrummer/EsameBasiDiDati/blob/master/PL-SQL.md#ref-cursor-sys_refcursor---cursori-dinamici)
-    1. [Definizione di procedure e funzioni](#definizione-di-e-procedure-funzioni);
+    1. [Definizione di procedure e funzioni](#definizione-di-procedure-e-funzioni);
 1. [Sequenze](#sequenze);
 1. [Trigger](#trigger);
     * [Ovviare il mutating table](#ovviare-il-mutating-table);
