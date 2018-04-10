@@ -154,7 +154,7 @@ BEGIN
         WHEN grade = 'D' THEN 'Fair'
         WHEN grade = 'F' THEN 'Poor'
         ELSE 'No such grade'
-    END;
+    END CASE;
 
     DBMS_OUTPUT.PUT_LINE(appraisal);
 END;
