@@ -70,7 +70,7 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
             1. [Aggiungere una nuova colonna](#aggiungere-una-nuova-colonna);
             1. [Modificare una colonna](#modificare-una-colonna);
             1. [Eliminare una colonna](#eliminare-una-colonna);
-        1. [Modificare i vincoli di una tabella](#Modificare i vincoli di una tabella):
+        1. [Modificare i vincoli di una tabella](#modificare-i-vincoli-di-una-tabella):
             1. [Aggiungere un vincolo](#aggiungere-un-vincolo);
             1. [Eliminare un vincolo](#eliminare-un-vincolo);
             1. [Modificare un vincolo](#modificare-un-vincolo);
@@ -192,7 +192,7 @@ In fase di creazione esistono i seguenti modi per dichiarare questo vincolo:
 Esistono anche vincoli di **integrità interrelazionali**. Il più utilizzato è quello di **integrità referenziale**, definito `FOREIGN KEY`.
 Una foreign key è un campo che fa riferimento ad un campo (principalmente una primary key) di un'altra tabella ed è utilizzato per rappresentare un'associazione fra le due.
 Anche vincolo può essere definito in fase creazionale nelle seguenti tre forme:
-1. Vicino alla dichiarazione della campo: `<nomeCampo> <tipoCampo> FOREIGN KEY REFERENCES <nomeTabella>(<campo>) [ON UPDATE <RESTICT | NO ACTION | CASCADE | SET NULL>] [ON DELETE <RESTICT | NO ACTION | CASCADE | SET NULL>]`;
+1. Vicino alla dichiarazione del campo: `<nomeCampo> <tipoCampo> FOREIGN KEY REFERENCES <nomeTabella>(<campo>) [ON UPDATE <RESTICT | NO ACTION | CASCADE | SET NULL>] [ON DELETE <RESTICT | NO ACTION | CASCADE | SET NULL>]`;
 1. Alla fine della dichiarazione dei campi: `FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>) [ON UPDATE <RESTICT | NO ACTION | CASCADE | SET NULL>] [ON DELETE <RESTICT | NO ACTION | CASCADE | SET NULL>]`;
 1. Creando una `CONSTRAINT <nomeVincolo> FOREIGN KEY (<campo>) REFERENCES <nomeTabella>(<campo>) [ON UPDATE <RESTICT | NO ACTION | CASCADE | SET NULL>] [ON DELETE <RESTICT | NO ACTION | CASCADE | SET NULL>]`;
 
