@@ -79,7 +79,8 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
     1. [Inserimento di un record (`INSERT`)](#inserimento-di-un-record-insert);
     1. [Modificare dei record (`UPDATE`)](#modificare-dei-record-update);
     1. [Eliminazione di record (`DELETE`)](#eliminazione-di-record-delete);
-1. [Costruire un'iterrogazione (`DQL`)](#costruire-uninterrogazione-dql);
+1. [Costruire un'iterrogazione (`DQL`)](#costruire-uninterrogazione-dql):
+   1. [Costrutti condizionali](#costrutti-condizionali);
 1. [Viste (`VIEW`)](#viste-view);
 
 ## Definizione dei metadati (`DDL`)
@@ -460,23 +461,25 @@ FROM <nomeTabella> [AS <alias>]
 [ORDER BY <campo> [, <campo>[, ...]]] [ASC | DESC]
 ```
 
-### `IS NULL`, `IS NOT NULL`
+### Costrutti condizionali
+
+#### `IS NULL`, `IS NOT NULL`
 * `IS NULL`: Verifica se il campo è `NULL`;
 * `IS NOT NULL`: Verifica se il campo **NON** è `NULL`;
 
-### `EXISTS`, `NOT EXISTS`
+#### `EXISTS`, `NOT EXISTS`
 * `EXISTS`: Verifica che la riga o il campo esistano in una tabella (indicata da subquery);
 * `NOT EXISTS`: Verifica che la riga o il campo **NON** esistano in una tabella (indicata da subquery);
 
-### `LIKE`, `NOT LIKE`
+#### `LIKE`, `NOT LIKE`
 * `LIKE`: Verifica se il campo ha un valore che risponde alla stringa passata;
 * `NOT LIKE`: rifica se il campo **NON** ha un valore che risponde alla stringa passata;
 
-### `IN`, `NOT IN`
+#### `IN`, `NOT IN`
 * `IN`: Verifica che il campo ha un valore presente nella lista passata;
 * `NOT `: Verifica che il campo **NON** ha un valore presente nella lista passata;
 
-### `BETWEEN`, `NOT BETWEEN`
+#### `BETWEEN`, `NOT BETWEEN`
 * `BETWEEN`: Verifica che il campo ha un valore compreso nel range indicato;
 * `NOT `: Verifica che il campo **NON** ha un valore compreso nel range indicatp;
 
