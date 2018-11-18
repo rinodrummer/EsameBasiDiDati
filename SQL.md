@@ -79,7 +79,7 @@ _Fonte: [SQL](https://it.wikipedia.org/wiki/Structured_Query_Language) - Wikiped
     1. [Inserimento di un record (`INSERT`)](#inserimento-di-un-record-insert);
     1. [Modificare dei record (`UPDATE`)](#modificare-dei-record-update);
     1. [Eliminazione di record (`DELETE`)](#eliminazione-di-record-delete);
-1. [Costruire un'iterrogazione (`DQL`)](#costruire-un-interrogazione-dql);
+1. [Costruire un'iterrogazione (`DQL`)](#costruire-uninterrogazione-dql);
 1. [Viste (`VIEW`)](#viste-view);
 
 ## Definizione dei metadati (`DDL`)
