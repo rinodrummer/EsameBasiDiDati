@@ -477,11 +477,11 @@ FROM <nomeTabella> [AS <alias>]
 
 #### `IN`, `NOT IN`
 * `IN`: Verifica che il campo ha un valore presente nella lista passata;
-* `NOT `: Verifica che il campo **NON** ha un valore presente nella lista passata;
+* `NOT IN`: Verifica che il campo **NON** ha un valore presente nella lista passata;
 
 #### `BETWEEN`, `NOT BETWEEN`
 * `BETWEEN`: Verifica che il campo ha un valore compreso nel range indicato;
-* `NOT `: Verifica che il campo **NON** ha un valore compreso nel range indicatp;
+* `NOT BETWEEN`: Verifica che il campo **NON** ha un valore compreso nel range indicato;
 
 
 
